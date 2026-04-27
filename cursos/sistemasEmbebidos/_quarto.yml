@@ -1,0 +1,28 @@
+project:
+  type: book
+
+book:
+  title: "Sistemas Embebidos"
+  author: "Luis Mendoza"
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - summary.qmd
+    - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme:
+        dark: cyborg
+        light: cosmo
+    toc-title: Contenido
+  pdf:
+    documentclass: scrreprt
+    toc-title: Contenido
+  epub:
+    toc: true
+    toc-title: Contenido
+    html-math-method: mathml
+
