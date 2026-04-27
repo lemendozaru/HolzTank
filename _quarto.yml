@@ -4,6 +4,7 @@ project:
   render:
     - "*.qmd"
     - "!cursos/"
+    - "!asignaturas/"
 
 website:
   title: "HolzTank"
@@ -13,20 +14,30 @@ website:
     left:
       - href: index.qmd
         text: Inicio
+      - href: asignaturas.qmd
+        text: Asignaturas
       - href: cursos.qmd
         text: Cursos
       - href: blog/index.qmd
         text: Blog
       - href: about.qmd
         text: Acerca de
+    logo: files/V4.png
+    tools:
+        - icon: github
+          href: https://github.com/lemendozaru
+        - icon: bluesky
+          href: https://bsky.app/profile/lemendozar.bsky.social
+        - icon: mastodon
+          href: https://masto.es/@lemendozar
   page-footer:
     center: "Hecho con R y Quarto"
 
 format:
   html:
     theme:
-        dark: cyborg
-        light: cosmo
+        dark: darkly
+        light: flatly
     css: styles.css
     toc: true
 
