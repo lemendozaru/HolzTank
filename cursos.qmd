@@ -6,7 +6,7 @@ listing:
     type: grid
 ---
 
-Descubre mis cursos. Cada uno incluye ejercicios prácticos y ejemplos reales.
+A continuación muestro el listado de cursos. Espero poder ir actualizándolos conforme vaya siendo necesario. Sugiero que se abran mediante clic derecho y abrir en nueva pestaña, ya que se pierde el acceso a la página principal al entrar a cada curso. Podría areglarlo pero, la vida es demasiado corta para ello.
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {

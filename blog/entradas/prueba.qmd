@@ -4,4 +4,4 @@ date: 2026-04-26
 categories: [R, Ciencia de Datos]
 ---
 
-Bienvenido al blog.
+Bienvenido al blog. Esto es el hola mundo de esta cosa.
