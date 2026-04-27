@@ -4,7 +4,7 @@ project:
 
 website:
   title: "HolzTank"
-  site-url: https://holztank.top/
+  site-url: "https://holztank.top"
   description: "Un sitio hecho con Quarto"
   navbar:
     left:
@@ -12,7 +12,7 @@ website:
         text: Inicio
       - href: cursos.qmd
         text: Cursos
-      - href: blog.qmd
+      - href: blog/index.qmd
         text: Blog
       - href: about.qmd
         text: Acerca de

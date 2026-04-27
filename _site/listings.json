@@ -1,0 +1,14 @@
+[
+  {
+    "listing": "/cursos.html",
+    "items": [
+      "/cursos/sistemasEmbebidos/index.html"
+    ]
+  },
+  {
+    "listing": "/blog/index.html",
+    "items": [
+      "/blog/entradas/prueba.html"
+    ]
+  }
+]

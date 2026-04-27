@@ -1,0 +1,32 @@
+---
+title: "Cursos"
+listing:
+    contents: "cursos/*/index.qmd"
+    sort: "date desc"
+    type: grid
+---
+
+Descubre mis cursos. Cada uno incluye ejercicios prácticos y ejemplos reales.
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const path = window.location.pathname;
+
+  const esCatalogo =
+    path.endsWith("/cursos.html") ||
+    path.endsWith("/cursos/") ||
+    path === "/cursos";
+
+  if (!esCatalogo) return;
+
+  document.querySelectorAll("a.listing-link").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      window.open(link.href, "_blank", "noopener,noreferrer");
+    });
+  });
+});
+</script>
+
+

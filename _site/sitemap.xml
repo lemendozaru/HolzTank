@@ -1,19 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://holztank.top/blog/entradas/prueba.html</loc>
+    <lastmod>2026-04-27T05:51:36.266Z</lastmod>
+  </url>
+  <url>
+    <loc>https://holztank.top/cursos.html</loc>
+    <lastmod>2026-04-27T07:15:53.550Z</lastmod>
+  </url>
+  <url>
+    <loc>https://holztank.top/cursos/sistemasEmbebidos/summary.html</loc>
+    <lastmod>2026-04-27T04:30:43.338Z</lastmod>
+  </url>
+  <url>
+    <loc>https://holztank.top/cursos/sistemasEmbebidos/index.html</loc>
+    <lastmod>2026-04-27T05:11:36.606Z</lastmod>
+  </url>
+  <url>
     <loc>https://holztank.top/index.html</loc>
     <lastmod>2026-04-27T03:12:41.190Z</lastmod>
   </url>
   <url>
-    <loc>https://holztank.top/blog.html</loc>
-    <lastmod>2026-04-27T04:20:01.689Z</lastmod>
-  </url>
-  <url>
-    <loc>https://holztank.top/cursos.html</loc>
-    <lastmod>2026-04-27T04:19:52.520Z</lastmod>
-  </url>
-  <url>
     <loc>https://holztank.top/about.html</loc>
     <lastmod>2026-04-27T03:41:29.414Z</lastmod>
+  </url>
+  <url>
+    <loc>https://holztank.top/cursos/sistemasEmbebidos/intro.html</loc>
+    <lastmod>2026-04-27T04:30:43.338Z</lastmod>
+  </url>
+  <url>
+    <loc>https://holztank.top/cursos/sistemasEmbebidos/references.html</loc>
+    <lastmod>2026-04-27T04:30:43.338Z</lastmod>
+  </url>
+  <url>
+    <loc>https://holztank.top/blog/index.html</loc>
+    <lastmod>2026-04-27T06:11:59.086Z</lastmod>
   </url>
 </urlset>

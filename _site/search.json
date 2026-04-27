@@ -1,10 +1,31 @@
 [
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "Acerca de",
+    "objectID": "blog/entradas/prueba.html",
+    "href": "blog/entradas/prueba.html",
+    "title": "Mi Primer Post",
     "section": "",
-    "text": "About this site"
+    "text": "Bienvenido al blog."
+  },
+  {
+    "objectID": "cursos.html",
+    "href": "cursos.html",
+    "title": "Cursos",
+    "section": "",
+    "text": "Descubre mis cursos. Cada uno incluye ejercicios prácticos y ejemplos reales.\n\n\n\n\n\n\n\n\n\n\n\n\n\nPrefacio\n\n\n\n\n\n\n\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "cursos/sistemasEmbebidos/summary.html",
+    "href": "cursos/sistemasEmbebidos/summary.html",
+    "title": "Summary",
+    "section": "",
+    "text": "Summary\nIn summary, this book has no content whatsoever."
+  },
+  {
+    "objectID": "cursos/sistemasEmbebidos/index.html",
+    "href": "cursos/sistemasEmbebidos/index.html",
+    "title": "Prefacio",
+    "section": "",
+    "text": "Prefacio\nThis is a Quarto book.\nTo learn more about Quarto books visit https://quarto.org/docs/books."
   },
   {
     "objectID": "index.html",
@@ -12,5 +33,33 @@
     "title": "HolzTank",
     "section": "",
     "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "Acerca de",
+    "section": "",
+    "text": "About this site"
+  },
+  {
+    "objectID": "cursos/sistemasEmbebidos/intro.html",
+    "href": "cursos/sistemasEmbebidos/intro.html",
+    "title": "Introduction",
+    "section": "",
+    "text": "Introduction\nThis is a book created from markdown and executable code.\nSee @knuth84 for additional discussion of literate programming."
+  },
+  {
+    "objectID": "cursos/sistemasEmbebidos/references.html",
+    "href": "cursos/sistemasEmbebidos/references.html",
+    "title": "References",
+    "section": "",
+    "text": "References"
+  },
+  {
+    "objectID": "blog/index.html",
+    "href": "blog/index.html",
+    "title": "Blog",
+    "section": "",
+    "text": "Mi Primer Post\n\n\n\n\n\n\n\n\n\nApr 26, 2026\n\n\n\n\n\n\nNo matching items"
   }
 ]
