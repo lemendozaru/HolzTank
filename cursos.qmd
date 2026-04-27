@@ -4,29 +4,12 @@ listing:
     contents: "cursos/*/index.qmd"
     sort: "date desc"
     type: grid
+    categories: true
+    fields: [title, description]
 ---
 
-A continuación muestro el listado de cursos. Espero poder ir actualizándolos conforme vaya siendo necesario. Sugiero que se abran mediante clic derecho y abrir en nueva pestaña, ya que se pierde el acceso a la página principal al entrar a cada curso. Podría areglarlo pero, la vida es demasiado corta para ello.
+A continuación muestro el listado de cursos. Espero poder ir actualizándolos conforme vaya siendo necesario. Sugiero que se abran mediante clic derecho y abrir en nueva pestaña, ya que se pierde el acceso a la página principal al entrar a cada curso. Podría arreglarlo, pero la vida es demasiado corta para ello.
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const path = window.location.pathname;
 
-  const esCatalogo =
-    path.endsWith("/cursos.html") ||
-    path.endsWith("/cursos/") ||
-    path === "/cursos";
-
-  if (!esCatalogo) return;
-
-  document.querySelectorAll("a.listing-link").forEach((link) => {
-    link.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      window.open(link.href, "_blank", "noopener,noreferrer");
-    });
-  });
-});
-</script>
 
 
