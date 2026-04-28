@@ -1,0 +1,25 @@
+# Conceptos Clave
+
+Podemos definir básicamente un juego hecho en Godot como un **árbol** de **nodos** que están agrupados en **escenas**, los cuales pueden comunicarse entre sí por medio de **señales**.
+
+Son esos cuatro elementos los que resultan la base de Godot. No los abordaremos muy profundamente, ya que preferimos que se aprendan mejor utilizándolos en práctica.
+
+## Escenas
+
+Podemos dividir nuestro juego en escenas que se pueden reutilizar. Una escena puede ser un personaje, un arma, un menú en la interfaz de usuario, una casa, un nivel, o cualquier cosa que queramos. Las escenas de Godot son muy flexibles.
+
+## Nodos
+
+Una escena está compuesta por uno o mas nodos. Los nodos son los pequeños bloques de construcción de nuestro juego, los cuales acomodamos en árboles.
+
+Los nodos se clasifican en categorías que nos permiten distinguir fácilmente cómo podríamos utilizarlos. Por ejemplo, tenemos nodos azules que son para el 2D, nodos rojos para el 3D y nodos verdes que nos permiten crear y diseñar la interfaz con la que nuestros jugadores podrán interactuar con el juego.
+
+## Árbol de escenas
+
+Todas las escenas del juego vienen juntas en el árbol de escenas, literalmente un árbol de escenas. Y las escenas son arboles de nodos, el árbol de escena también es un árbol de nodos. Pero hay una manera mas fácil de pensar en nuestro juego en términos de escenas, así ellos pueden representar los personajes, armas, puertas, o la propia interfaz del usuario.
+
+## Señales
+
+Los nodos emiten señales cuando un evento ocurre. Esta característica nos permite hacer que los nodos se comuniquen sin tener que escribirlo en el código. Eso le da mayor flexibilidad a la manera en la que estructuramos nuestras escenas.
+
+Por ejemplo, un botón emite una señal cuando es presionado. La idea es interceptar esa señal y decirle a nuestro programa qué deberá hacer con ella. Otros ejemplos de señal son cuando un objeto choca con otro o un personaje sale de un área.

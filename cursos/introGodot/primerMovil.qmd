@@ -1,0 +1,545 @@
+# Primer Juego Móvil
+
+Crearemos nuestro primer juego ejecutable en dispositivos móviles (android, siendo específicos), el cual será bastante simple pero completo. Consistirá básicamente en un personaje animado que estará movíendose en pantalla con el fin de recolectar monedas que aparecerán aleatoriamente mientras un contador nos limita el tiempo para realizarlo.
+
+## Configurando el proyecto
+
+Lo primero a realizar es la importación de los elementos gráficos, para ello descargaremos los que se encuentran disponibles en la plataforma del curso, los descomprimimos y, tras haber creado la carpeta `assets/` en el sistema de archivos de Godot, los arrastramos ahí dentro mediante el navegador de archivos de nuestro sistema operativo.
+
+Enseguida nos vamos a la configuración del proyecto y cambiamos el tamaño de pantalla a un ancho de `540` por alto de `960`. Así, la pantalla ya se asemeja más a la del dispositivo objetivo, pero aún no está del todo lista. En la misma ventana en la que estamos buscaremos la sección *Estirar* y en su propiedad *Modo* lo cambiamos a `canvas_items` y *Aspecto* lo dejamos en `keep`. Ahí mismo buscamos la sección *Manipulador* y cambiamos la propiedad *Orientación* a `Sensor Portrait`.
+
+### Configurando la pantalla inicial
+
+Como nodo raíz de nuestra primera escena usaremos un nodo `Control` y le renombramos como `Menu`. Guardamos la escena con el mismo nombre en su respectiva carpeta creada expresamente (`scenes/menu.tscn`) y la volvemos escena principal. Agregamos como hijo un nodo `ColorRect` y en su propiedad *Color* escogemos el que deseemos.
+
+Agregamos como hijo de `Menu` un nodo `Label` y le llamaremos `TitleLabel`. En su propiedad *Text* escribimos el nombre del juego o lo que deseemos y en la sección *Control* apartado *Theme Overrides* cambiaremos la fuente para cargar la que viene en los assets. También pondremos un tamaño adecuado (`64` parece estar bien). En la parte superior del inspector tenemos acceso a la alineación del texto dentro de la etiqueta. Podemos dejarlo como queramos, pero siempre se ve bien una alineación central tanto en lo horizontal como en lo vertical. Le daremos un anclaje a la etiqueta de *Centro Superior*, pero utilizando la propiedad de posición en $y$ la bajaremos un poco para que tenga un pequeño margen con el limite con la pantalla.
+
+Acto seguido, agregaremos un `Button` como hijo de `Menu` y lo renombramos `PlayButton`. En su campo de texto escribimos "Play", por ejemplo y le cargamos la misma fuente que la etiqueta pero con un tamaño ligeramente menor (`60` está bien). En anclaje le seleccionamos un *Centro* pero, utilizando los manejadores, le cambiaremos un poco el tamaño para que haya márgenes con respecto al texto. Si al hacerlo se cambió de posición, volvemos a colocar el anclaje.
+
+Si presionamos {{<kbd F5>}} podremos ver cómo va quedando nuestro juego, aunque vayamos en una etapa muy temprana de desarrollo.
+
+Crearemos otra escena y le agregamos un nodo `Node` al que llamaremos `Main` y la guardamos como aparece por defecto. Volvemos a `Menu` y le agregamos un script vacío y lo guardaremos como `menu.gd`.
+
+seleccionamos `PlayButton` y conectamos su señal `pressed()` a `Menu`. En la función que aparece en `menu.gd` le agregamos la siguiente línea en lugar del `pass`:
+
+```gdscript
+get_tree().change_scene_to_file("res://scenes/main.tscn")
+```
+
+### Configurando la pantalla principal
+
+Nos ubicamos en `main.tscn` y agregamos un nodo `Control` a `Main` y le renombramos como `UI`. Nos aseguramos de asignarle un anclaje completo. Entonces le agregamos un nodo `ColorRect` y le cambiamos el color al de fondo que deseemos para el juego. Luego agregamos un nodo `Label` que renombramos como `CoinsLabel`. En su campo de texto ponemos "Monedas: 0" y le cambiamos la fuente por la que tenemos en los assets y el tamaño a `60`. Le damos un anclaje *Centro Superior* y lo bajamos unos 20 px en $y$ para que no se vea tan junto al borde de pantalla.
+
+Duplicamos la etiqueta y la renombramos como `LevelLabel`. En su campo de texto escribimos "Nivel: 1", le ponemos un anclaje *Centro Superior* y lo bajamos un poco, por ejemplo en su posición $y$ podemos dejarla en `85`.
+
+El siguiente paso consiste en agregar los controles del jugador, considerando que estaremos trabajando con pantallas táctiles. Toca seleccionar `UI` y agregarle un nodo `Button` que llamaremos `UpButton`. Le asignamos un anclaje de *Centro Inferior*, le cambiamos el tamaño a `75` por ejemplo y lo movemos en $y$ aproximadamente 100 pixeles o un poco más hacia arriba. Lo duplicamos y le cambiamos el nombre al nuevo botón como `DownButton`. A este lo movemos hacia abajo para que no se traslape con el anterior. Repetimos para tener los botones `LeftButton` y `RightButton` en posiciones adecuadas. Ahora toca configurar los botones, pero primero crearemos al jugador.
+
+## Configurando al jugador
+
+### Creando al jugador
+
+Seleccionamos `Main` y le agregamos un nodo `Area2D`. Le llamaremos `Player`. A este le añadimos un nodo `Sprite2D` y en su propiedad *Texture* daremos clic en [vacío] y mediante la *Carga rápida* cargaremos `idle.png`. Nos percataremos que se ve algo borrosa esta imagen, por lo que buscamos la propiedad *Texture* de la sección *CanvasItem* y seleccionamos `Nearest`. La calidad debe haber mejorado sustancialmente. Como siguiente actividad, nos dirigimos al apartado *Animation* de la sección *Sprite2D* y en su propiedad *Hframes* cambiamos a `4` para que el sprite tenga "solo" un personaje a la vez.
+
+Con el sprite ya configurado, corresponde agregarle a `Player` un `CollisionShape2D`. En este caso su forma de colisión será un *RectangleShape2D*. Le cambiamos el tamaño para que sea más pequeña que el sprite.
+
+Seleccionamos `Player` y en su propiedad *Scale* del apartado *Transform* le cambiamos a `3`, luego en su posición lo llevamos a más o menos el centro de la pantalla.
+
+Ahora sí, a configurar los botones. Seleccionamos `Player` y le adjuntamos un script vacío que llamaremos `player.gd`. Luego seleccionamos `UpButton` y conectamos sus señales `ButtonUp()` y `ButtonDown` a `Player`. Podemos probar si el funcionamiento de estos botones es correcto si sustituimos el `pass` por `print("presionado")` para el primero y `print("no presionado")` para el segundo y corremos el juego. Los mensajes se deberían mostrar en la salida de Godot mientras el juego está en ejecución.
+
+Verificado que todo funciona como se espera, volvemos a poner `pass` en donde estaba y conectamos las mismas señales pero ahora de los botones restantes al mismo `Player`.
+
+### Programando al jugador
+
+Crearemos tres variables, una que almacenará la dirección del jugador, dependiendo de los botones presionados; una que configurará la velocidad del jugador y otra que determinará si el jugador puede o no moverse, dependiendo también del estado de los botones.
+
+En el script `player.gd` agregamos estas variables con las siguientes líneas:
+
+```gdscript
+var direction : Vector2
+var speed : int = 350
+var canMove : bool
+```
+
+Debajo de estas asignaciones agregamos la función que estará ejecutándose cada frame:
+
+```gdscript
+func _process(delta: float):
+	if canMove:
+		position += direction * speed * delta
+```
+
+Estas líneas permiten que el motor verifique si el personaje puede moverse, y si es así, cambiará su posición de acuerdo a la dirección indicada multiplicada por la velocidad que definimos arriba. Sin embargo, debemos multiplicar de nuevo pero ahora por `delta`, la cual representa el tiempo que se tarda el juego en completar un frame. Esto es así para asegurarnos de que el personaje siempre se mueva a la misma velocidad, sin importar la tasa de cuadros por segundo.
+
+Pero, ¿cómo sabe el motor que el personaje sí puede moverse? Pues cuando no haya algún botón presionado. Agregamos esta comprobación a cada una de las señales `button_up()` que tenemos en el script:
+
+```gdscript
+canMove = false
+```
+
+Y también a las `button_down()` les agregaremos su correspondiente comprobación:
+
+```gdscript
+canMove = true
+```
+
+También necesitamos definir la dirección del jugador. Esto también lo haremos en las señales de los botones `button_down()`, pero respetando la dirección asignada al botón anteriormente. Por ejemplo, para el botón izquierdo quedaría:
+
+```gdscript
+func _on_left_button_button_down():
+    direction = Vector2.LEFT
+```
+
+Y para el derecho sería:
+
+```gdscript
+func _on_right_button_button_down():
+    direction = Vector2.RIGHT
+```
+
+Repetimos para los demás botones y guardamos. Podemos probar qué tal se mueve nuestro jugador.
+
+Probablemente nos dimos cuenta que el jugador puede "salirse" de la pantalla, lo cual es un comportamiento indeseable. Debemos limitarle tanta libertad. Podemos utilizar paredes invisibles o demás elementos, aunque en esta ocasión resulta bastante práctico utilizar otro recurso, la función `clamp()`. Definamos las coordenadas del punto más alto y a la izquierda donde pueda llegar el personaje y luego el punto más bajo y a la derecha. Al primer par de coordenadas lo almacenaremos como una variable de valores mínimos y al segundo como otra variable pero ahora de valores máximos. Dichas coordenadas deberían ser obtenidas manualmente, considerando que el personaje no debe tocar la interfaz ni los botones.
+
+Para la forma en la que conformamos los diferentes elementos, dichas variables nos quedaron como sigue. Consideremos el caso único de cada uno de nosotros, así que tómense como valores de referencia, nada más.
+
+```gdscript
+var minPositions : Vector2 = Vector2(21, 168)
+var maxPositions : Vector2 = Vector2(519, 743)
+```
+
+Ahora, al final de la función `_process()` agregamos las líneas
+
+```gdscript
+position.x = clamp(position.x, minPositions.x, maxPositions.x)
+position.y = clamp(position.y, minPositions.y, maxPositions.y)
+```
+
+Con esto, nuestro caracter debería tener movimientos limitados a los bordes de la pantalla. En caso de no ser así, toca ajustarlos en las variables correspondientes.
+
+### Animando al jugador
+
+Hemos estado trabajando con un sprite estático para la configuración de nuestro personaje. Sin embargo, solo era un *dummy*. Para nuestro personaje final necesitamos que tenga animaciones. Para ello, en `main.tscn` eliminamos a `Sprite2D` y lo sustituimos con un `AnimatedSprite2D`. Lo dejamos seleccionado y en el inspector, propiedad *Sprite Frames* damos clic en *vacío* y le damos en *Nuevo -> SpriteFrames*. Damos clic en el icono que aparecerá en ese mismo lugar para abrir el Editor de cuadros de animación.
+
+En este editor solo está una animación llamada "default". Le cambiamos el nombre a "Back". Luego damos clic en *Añadir animación* y la nombramos "Death". Agregaremos las animaciones "Front", "Idle" y "Walk".
+
+Seleccionamos "Back" y damos clic en *Añadir fotogramas desde hoja de sprites* (se encuentra en la barra de herramientas del editor) y escogemos `back.png`. Veremos una vista previa de los frames de animación, pero colocados uno al lado de otro. Debemos asegurarnos de dividir la rejilla de manera que nos deje 4 sprites (uno por cada "personaje", cuatro horizontales y uno vertical). Nos aseguramos de dejar habilitado el *Loop de animación*. Si el sprite se ve borroso, cambiemos su propiedad *Filter* en la sección *Texture* a `Nearest`. Si la animación nos parece lenta o rápida, podemos cambiar su velocidad en la propiedad *Speed Scale*.
+
+Repetimos los pasos para las demás animaciones, aunque "Death" solo tiene un cuadro de animación. Por otro lado, dejaremos la animación "Idle" como la única que se cargue al iniciar el juego, esto tras habilitar el botón *Reproducción automática al cargar* que está a la izquierda del *Loop de animación*.
+
+### Programando las animaciones
+
+Comencemos definiendo las animaciones que se darán cuando el jugador realice determinadas acciones. En primer lugar, la animación por defecto ("Idle") debe cargarse al iniciar (lo cual ya hicimos) y debe mantenerse mientras no nos movamos. Para ello nos dirigimos al final de `func _process()` en `player.gd` y agregamos las líneas:
+
+```gdscript
+else:
+    $AnimatedSprite2D.animation = "Idle"
+```
+
+Tengamos en cuenta que van por fuera del `if`.
+
+Para las demás animaciones debemos considerar a cuál botón corresponden. Por ejemplo, la animación "Back" le toca al botón "Up", así que agregamos lo siguiente a su respectivo bloque de código (`_on_up_button_button_down()`), justo después de `direction = Vector2.UP`:
+
+```gdscript
+$AnimatedSprite2D.animation = "Back"
+```
+
+Lo mismo aplica para la animación "Front" que va con el botón "Down" y "Walk" tanto con el botón "Right" como el botón "Left". Sin embargo, con estos últimos agregamos una línea más, quedando como sigue para el primero:
+
+```gdscript
+func _on_right_button_button_down() -> void:
+	canMove = true
+	direction = Vector2.RIGHT
+	$AnimatedSprite2D.animation = "Walk"
+	$AnimatedSprite2D.flip_h = false
+```
+y para el segundo:
+
+```gdscript
+func _on_left_button_button_down():
+	canMove = true
+	direction = Vector2.LEFT
+	$AnimatedSprite2D.animation = "Walk"
+	$AnimatedSprite2D.flip_h = true
+```
+
+## Configurando las monedas
+
+Creamos una escena nueva y agregamos un `Area2D` como raíz y le renombramos `Coin`. A este le agregamos un `Sprite2D` y arrastramos la imagen `Coin.png` a su propiedad *Texture*, para después cambiarle la escala a `0.25`. Después agregamos un `CollisionShape2D` al mismo `Coin` con un *CircleShape2D*. Guardamos la escena como `coin.tscn`.
+
+### Incrementando el puntaje
+
+Primero crearemos un grupo que englobe al nodo `Coin` y todas sus copias o instancias. Abrimos `coin.tscn`, seleccionamos `Coin` y en el panel de *Grupos* añadimos uno al que nombraremos "coins".
+
+Después abrimos `main.tscn` y seleccionamos `Player`. Declaramos una nueva variable:
+
+```gdscript
+var score : int
+```
+
+Nos dirigimos a *Señales* y conectamos la señal `area_entered()`. Dentro de la nueva función escribimos:
+
+```gdscript
+if area.is_in_group("coins"):
+	score += 1
+	get_parent().get_node("UI/CoinsLabel").text = "Coins: " + str(score)
+```
+
+### Apareciendo las monedas
+
+En `main.tscn` seleccionamos `Main` y le adjuntamos un script (le llamaremos `main.gd`). Ahí crearemos un par de variables:
+
+```gdscript
+# Nivel actual del juego
+var level : int = 1
+# Escena a instanciar para nuestras monedas
+@export var coin : PackedScene
+```
+
+También debemos considerar que las monedas deben aparecer solo en el área que nuestro jugador puede pisar, por lo que debajo de estas variables repetiremos las que ya tenemos en `player.gd`:
+
+```gdscript
+# Área donde aparecerán las monedas
+var minPositions : Vector2 = Vector2(21, 168)
+var maxPositions : Vector2 = Vector2(519, 743)
+```
+
+Después de declarar nuestras variables debemos crear una función que nos permita instanciar nuestras monedas. Esta función debe ser llamada cuando inicie el juego, así que la pondremos dentro de `_ready()`.
+
+```gdscript
+func _ready() -> void:
+	instantiate_coins()
+```
+
+La variable `level` será la que defina cuántas monedas aparecerán en pantalla, por lo que en el Nivel 1 solo habrá una moneda, mientras que en el Nivel 2 habrá 2, y así sucesivamente. Para implementar esta mecánica, usaremos un ciclo que se repite tantas veces como el número de nivel en el que estemos. En ese ciclo declaramos una variable que tomará la escena instanciada en `coin` (podemos cargarla de una vez en el inspector: `coin.tscn`), luego definimos dos coordenadas extraídas aleatoriamente a partir de las mínimas y máximas de nuestra área jugable y se las asignamos a la posición de la nueva escena instanciada. Por último, agregamos dicha escena.
+
+```gdscript
+func instantiate_coins():
+	# se repetirá tantas veces como el nivel actual
+	for i in range(level):
+		# variable que tomará la escena instanciada
+		var coin_instance : Area2D = coin.instantiate()
+		# coordenada aleatoria en x
+		var random_x : float = randf_range(minPositions.x, maxPositions.x)
+		# coordenada aleatoria en y
+		var random_y : float = randf_range(minPositions.y, maxPositions.y)
+		# asignamos ambas coordenadas a la nueva escena
+		coin_instance.position = Vector2(random_x, random_y)
+		# agregamos la escena instanciada pero diferida
+		call_deferred("add_child", coin_instance)
+```
+
+Si probamos el juego, ya deberían aparecer tantas monedas como el valor de `level` y al tocarlas con el jugador debería actualizarse el puntaje.
+
+## Programando la lógica del juego
+
+Entramos en `player.gd`. Declararemos otra variable que almacenará el número de monedas que se han recolectado en el nivel.
+
+```gdscript
+var coins_collected : int
+```
+
+Luego nos dirigimos al final del script y en la función `_on_area_entered()` agregamos unas líneas, para dejarla como se ve enseguida:
+
+```gdscript
+func _on_area_entered(area: Area2D) -> void:
+	if area.is_in_group("coins"):
+		# contamos las monedas recolectadas
+		coins_collected += 1
+		# incrementamos el puntaje
+		score += 1
+		# cargamos el nodo CoinsLabel del nodo padre y le asignamos el puntaje
+		get_parent().get_node("UI/CoinsLabel").text = "Monedas: " + str(score)
+		# si coincide el nivel con las monedas recolectadas...
+		if coins_collected == get_parent().level:
+			# reiniciamos el contador de monedas
+			coins_collected = 0
+			get_parent().level_passed()
+```
+
+Nos vamos a `main.gd` y al final de todo creamos la función que llamamos al final del último bloque que escribimos:
+
+```gdscript
+func level_passed():
+	# incrementamos el nivel
+	level += 1
+	# actualizamos el texto en pantalla
+	$UI/LevelLabel.text = "Nivel: " + str(level)
+	# traemos el ciclo de nuevo
+	instantiate_coins()
+```
+
+Continuamos en la escena `main`, en la cual seleccionamos `Player` y lo agregamos a un grupo llamado `players`. Enseguida creamos un script para el nodo `Coin` en su respectiva escena. Con el mismo nodo seleccionado conectamos su señal `area_entered()` consigo mismo. En el script escribimos:
+
+```gdscript
+func _on_area_entered(area: Area2D) -> void:
+	# si colisiona con un jugador...
+	if area.is_in_group("players"):
+		# se elimina
+		queue_free()
+```
+
+Listo, ya tenemos la mecánica básica del juego terminada.
+
+## Efectos visuales
+
+Crearemos un efecto de confetti que aparecerá cuando terminemos un nivel.
+
+### Configurando el confetti
+
+Creamos una escena y le ponemos de raíz un nodo `CPUParticles2D`, lo renombramos como `ConfettiParticles` y guardamos la escena con el mismo nombre (`confetti_particles.tscn`). Si nos acercamos al nodo veremos que está liberando continuamente partículas. En el inspector modificaremos algunas de sus propiedades. En *Amount* lo dejamos en `50`, en *Time -> Lifetime* lo dejamos en `2`s y bajamos un poco dentro de la misma sección *Time*. Cambiamos los siguientes valores: *Explosiveness*: `0.6`, *Randomness*: `0.2`; en sección *Direction* cambiamos *Direction Y*: `-8`, y *Spread*: `23.41`; en sección *Gravity* modificamos *Gravity Y*: `400`; en la sección *Initial Velocity* cambiamos *Velocity Max*: `1000`; en sección *Angle* llevamos el *Min*: `25`, y el *Max*: `35`, *Curve* le damos valor mínimo de `-360` y máximo de `360` con punto izquierdo en `(0,360)` y punto derecho en `(1,-214)`; en la sección *Color* cargamos un nuevo *Color Ramp* del tipo `Gradient` y le asignamos a ambos colores unos tonos rojizos o violáceos, cambiamos la *Interpolation* a `Cubic`; en la sección *Hue Variation* dejamos todo por defecto, pero la curva la armamos con coordenadas de `(0,1)` y `(1,-1)`.
+
+Con todas esas propiedades editadas deberíamos tener un efecto de partículas similar a confetti. Podemos ahora activar la propiedad *One Shot* en la sección *Time* para que solo se active una vez. Toca posicionarlo en un punto donde se consiga el efecto deseado en la pantalla del juego. Se sugiere que lo ubiquemos en el centro horizontal pero un poco abajo de la pantalla. Unas coordenadas en *Transform -> Position* de `(270,1000)` parecen funcionar bien.
+
+### instanciando el cofetti
+
+En `main.gd` justo debajo del instanciamiento de `coin` ponemos
+
+```gdscript
+# instanciamos el confetti
+@export var confetti : PackedScene
+```
+
+y cargamos dicha escena en el inspector.
+
+En la parte final del script agregamos otra función:
+
+```gdscript
+func instantiate_confetti():
+	var confetti_instance : CPUParticles2D = confetti.instantiate()
+	add_child(confetti_instance)
+	confetti_instance.position = Vector2(270,980)
+	confetti_instance.emitting = true
+```
+
+Y agregamos esto al final de la función `level_passed()`
+
+```gdscript
+instantiate_confetti()
+```
+
+### Animando las monedas
+
+Lo que deseamos para la animación de nuestras monedas cuando sean recolectadas es que se agranden un poco y luego desaparezcan gradualmente, no tan brusco como cuando las desaparecemos con código con la función `queue_free`. Abrimos `coin.tscn` y agregamos un nodo a `Coin` del tipo `AnimationPlayer`. En el panel de animación agregamos una nueva a la que llamaremos "CoinCollected". Seleccionamos `Sprite2D` y nos vamos al inspector. Ahí localizamos la propiedad *Scale* (recordemos que está en el apartado *Transform*) y tal como está, presionamos la llave que está a su derecha. Si aparece un mensaje, seleccionamos *Crear pista RESET*. Eso crea una clave de animación.
+
+Movemos el cursor azul hacia el segundo `1` (podemos hacerlo arrastrándolo, o mejor aún, escribiendo en la caja de texto que está justo encima). Hecho lo anterior editamos la misma propiedad de *Scale*, cambiando a `2.5`. Volvemos a presionar la llave.
+
+Devolvemos el cursor de tiempo al inicio (`0`) y localizamos la propiedad *Modulate* del apartado *Visibility*. Así, sin cambiar nada, clicamos la llave y creamos otra pista RESET.
+
+De nuevo movemos el tiempo al segundo `1` pero ahora sí cambiaremos la propiedad *Modulate*, aunque será algo simple: clicamos el recuadro de color (en este momento es blanco) y cambiamos el *alpha* (el deslizador con la letra A) para dejarlo en `0`. Con ello logramos que la moneda se vuelva transparente. Volvemos a presionar la llave. Probemos las animaciones.
+
+Por último, quizá nos parezca muy lenta dicha animación. Si deseamos cambiarla seleccionamos `AnimationPlayer` y en su propiedad *Speed Scale* la cambiamos a un valor que nos agrade. Uno de `2.5` parece funcionar bien.
+
+Continuamos con nuestra moneda, pero ahora implementaremos su animación mediante código, ya que queremos que también se deshabilite su forma de colisión. Abrimos `coin.gd` y cambiamos la línea `queue_free()` (y su comentario) por
+
+```gdscript
+# se activa la animación de desaparecer
+$AnimationPlayer.play("CoinCollected")
+# deshabilitamos la forma de colisión
+$CollisionShape2D.call_deferred("set_disabled", true)
+```
+
+Por último, debemos eliminar el objeto, no solo de pantalla deshabilitándolo, si no de la memoria pero cuando haya terminado la animación. Para ello, seleccionamos el `AnimationPlayer` y conectamos su señal `animation_finished()` a `Coin`. En la función que se ha creado ya podremos escribir
+
+```gdscript
+queue_free()
+```
+
+Si la animación se sigue reproduciendo infinitamente cuando tocamos la moneda, hay que deshabilitar la animación en loop desde el editor de animación (se accede seleccionando el `AnimationPlayer`).
+
+### Animando la interfaz
+
+Como parte del atractivo estético, también nos podría interesar animar la etiqueta de puntaje cada vez que recojamos una moneda. Un efecto típico es solo aumentar su tamaño temporalmente y devolverla al original casi de inmediato. Así que procedamos.
+
+Lo primero que debemos realizar es seleccionar `CoinsLabel` en la escena `main`. Luego tendremos que cambiar el pivote o centro de la etiqueta para que así al aumentarla de tamaño no se "desalinee" o desfase. Lo conseguimos yendo a la propiedad *Transform -> Pivot Offset*, que hace lo que dice, desfasa el centro a un punto que le digamos. Debemos darle las coordenadas de dicho punto. Para realizarlo rápido, escribimos directamente en *X* el valor que tengamos en *Size X* entre $2$. Por ejemplo, si en *Size X* tenemos `381`, en *Pivot Offset X* escribimos `381/2`. Godot realizará la división por nosotros. Repetimos en *Y* y ya tendremos el pivote centrado.
+
+
+Lo siguiente a realizar es agregar a `UI` un nodo `AnimationPlayer` al que podemos cambiarle el nombre a `CoinsLabelAnimationPlayer`. Luego creamos una nueva animación que llamaremos "IncreaseDecrease".
+
+Veamos ahora el inspector. En esta animación, la primera clave estará tal y como tenemos todo por defecto. Damos clic en la llave a la derecha de *Transform -> Scale*. Cambiamos el cursor a `0.5` y editamos la escala a `1.1`. Presionamos la llave de nuevo. Para finalizar, movemos el cursor a `1` y devolvemos la escala a `1.0` de nuevo. Probemos la animación. Muy probablemente sea muy lenta, en nuestro caso le editamos en la propiedad *Speed Scale* de `CoinsLabelAnimationPlayer` a `3.5`.
+
+Toca implementar la animación mediante código. Abrimos `player.gd` y justo antes del segundo `if` de la función `_on_area_entered()`
+
+```gdscript
+# cargamos el nodo de animación de UI
+get_parent().get_node("UI/CoinsLabelAnimationPlayer").play("IncreaseDecrease")
+```
+Y ya hemos terminado con los efectos visuales. Es momento de implementar la mecánica de la salud del caracter.
+
+## La barra de vida
+
+Crearemos un sistema de salud para nuestro personaje que consistirá en la imagen de un corazón que irá disminuyendo conforme pase el tiempo. Esto le indicará al jugador el tiempo que tiene para finalizar el nivel.
+
+### Configurando la barra de vida
+
+Seleccionamos el nodo `UI` de la escena `main`. Le agregamos un nodo `TextureProgressBar`, le llamamos `HealthBar` y lo anclamos al centro de la pantalla. Con este seleccionado iremos a desplegar el apartado *Texture* en el inspector. Ahí veremos las propiedades *Under*, *Over* y *Progress*. Nos interesa la tercera en este momento. Arrastraremos el archivo `Heart.png` a donde pone "vacío". Luego habilitamos *Nine Patch Stretch* y cambiamos *Fill Mode* a `Counter Clockwise`.
+
+Ahora desplegamos *Layout -> Transform* para cambiar las propiedades *Size X* y *Size Y* a `200` cada una. En la sección *Range* vamos a cambiar las propiedades *Max Value* y *Value*, ambas a `100000`.
+
+No olvidemos cambiarle la propiedad *CanvasItem -> Texture -> Filter* a `Nearest`.
+
+### Programando la barra de vida
+
+Primero crearemos un par de variables en las que almacenaremos dos valores importantes: la cantidad de vida máxima y la velocidad en la que disminuirá. Lo hacemos agregando las siguientes líneas a `main.gd`.
+
+```gdscript
+# vida máxima
+var health : float = 100000
+# velocidad a la que disminuye la vida
+var health_speed : float = 1750
+```
+
+Luego toca irnos a la función `_process(delta)`, la cual recordemos que se manda llamar en cada cuadro. Entonces, continuamente estará sensando si el jugador aún tiene "vida" (o tiempo, depende cómo se vea) y si es así, aplicará la disminución de la misma conforme transcurra el tiempo que le queda. Esto es así para evitar valores negativos. Escribimos las siguientes líneas en la función correspondiente:
+
+```gdscript
+func _process(delta: float) -> void:
+	# si tenemos salud...
+	if health > 0:
+		# disminuirá a la velocidad que definimos...
+		health -= delta * health_speed
+		# y lo mostramos en la barra de salud
+		$UI/HealthBar.value = health
+```
+
+En este momento no hemos implementado una forma de restaurar la vida. Podríamos agregar "power-ups", ítems o simplemente rellenar la salud cada que terminemos un nivel. Haremos lo último. En la función `level_passed()` que ya tenemos, agregamos al principio
+
+```gdscript
+# restauramos la salud
+health = 100000
+```
+
+Y asunto resuelto.
+
+## El *Game Over*
+
+No hemos hecho nada con el momento en el que muramos. Y en el juego tampoco. Diseñaremos primero la interfaz gráfica y después programaremos su lógica.
+
+### Diseñando el Game Over
+
+Seleccionamos `Main` y cambiamos al viewport 2D. Le agregamos un nodo `Control` y le llamamos `GameOver`. Le aplicaremos un anclaje "Completo" y luego le agregamos otro nodo `ColorRect`, al cual le cambiamos el nombre a `Background` y le aplicamos el mismo anclaje. En la propiedad `Color` de este último nodo le damos clic y la cambiamos a un negro ligeramente transparente (cambiamos *R*, *G* y *B* a `0` y *A* a `225`).
+
+Luego debemos agregar una etiqueta, pero bien podemos copiar `CoinsLabel` con clic derecho sobre ella y enseguida pegarla dentro del nodo `GameOver`, también con clic derecho. Le cambiamos el campo de texto para que diga "Game Over" y la renombramos como `GameOverLabel`. Podemos dejarle el mismo anclaje o cambiarlo, depende de nuestro criterio.
+
+Añadiremos un par de botones: uno para reintentar el juego tras perder y otro para irnos al inicio (este nos podría servir por si más delante queremos agregar un menú u otros modos de juego). Al primero lo agregamos como hijo de `GameOver` y le llamamos `RetryButton`. Escribimos en su campo el título que deseemos, aquí decidimos ponerle "Reiniciar". Ahora toca cambiarle la fuente y tamaño de la misma. Se repitió lo mismo que para la interfaz: en *Control -> Theme Overrides -> Fonts* cargamos la que está en los assets y en tamaño le cambiamos a `60`. Para el segundo solo duplicamos el primero, pero ahora escribiremos "Inicio" en su caja de texto y le renombramos `HomeButton`.
+
+No les hemos aplicado anclaje alguno, ya que queremos alinearlos en grupo. Seleccionamos ambos nodos y damos clic derecho. Seleccionamos *Reemparentar a nuevo nodo* y buscamos uno llamado `VBoxContainer`. Esto los alineará juntos. Si deseamos cambiar la separación entre ambos, nos vamos a *Themes Overrides*, habilitamos *Separation* y lo cambiamos a `30`. Ahora aplicamos un anclaje de "Centro Inferior" y mediante *Layout -> Transform -> Position Y* lo subimos ligeramente para que no quede en el borde de pantalla.
+
+### Programando el Game Over
+
+Adjuntaremos un script a `GameOver`, seleccionamos cada botón hijo de este y conectamos sus respectivas señales `pressed()` al mismo nodo `GameOver`. Debemos estar seguros de estarlo haciendo así.
+
+Editaremos las funciones que aparezcan de las siguientes maneras:
+
+```gdscript
+func _on_retry_button_pressed() -> void:
+	# recargamos la escena actual
+	get_tree().reload_current_scene()
+```
+
+```gdscript
+func _on_home_button_pressed() -> void:
+	# cargamos la escena de menú
+	get_tree().change_scene_to_file("res://scenes/menu.tscn")
+```
+
+No olvidemos cambiar el orden de renderizado para que esta pantalla de "Game Over" se muestre por encima de todos los demás elementos. Seleccionamos `GameOver` y en *CanvasItem -> Ordering -> Z Index* lo cambiamos a `10`. Tampoco olvidemos ocultar la escena por defecto, lo cual logramos si en el árbol de nodos cambiamos la visibilidad (el "ojo" al lado de cada nodo) del `GameOver`.
+
+Ahora abriremos `main.gd` y declaramos una nueva variable
+
+```gdscript
+# estado del game over
+var game_over : bool
+```
+
+Luego agregamos el `else` a `_process(delta)`, obviamente después del `if`
+
+```gdscript
+func _process(delta: float):
+	# si tenemos salud...
+	if health > 0:
+		# disminuirá a la velocidad que definimos...
+		health -= delta * health_speed
+		# y lo mostramos en la barra de salud
+		$UI/HealthBar.value = health
+	# si no tenemos salud...
+	else:
+		# mostramos la pantalla de game over
+		$GameOver.show()
+		# habilitamos la variable
+		game_over = true
+```
+
+Y ya para terminar con el "game over" toca irnos al `player.gd` para activar la animación de "muerte" mediante unos cambios al código de la función `_process(delta)`:
+
+```gdscript
+func _process(delta: float):
+	# si nos podemos mover...
+	if canMove:
+		# la posición se obtiene de la dirección por velocidad
+		position += direction * speed * delta
+		position.x = clamp(position.x, minPositions.x, maxPositions.x)
+		position.y = clamp(position.y, minPositions.y, maxPositions.y)
+	# si no...
+	else:
+		# si estamos en game over
+		if get_parent().game_over:
+			# reproduce la animación de muerte
+			$AnimatedSprite2D.animation = "Death"
+			# y retorna o termina
+			return
+		$AnimatedSprite2D.animation = "Idle"
+```
+Listo. Hemos terminado nuestro primer juego móvil. Quizá no resulta demasiado fácil, pero vale la pena. Pasemos a la última etapa, exportarlo para realmente poder jugarlo en nuestro dispositivo móvil.
+
+## Exportando a Android
+
+### Requisitos
+
+#### OpenJDK 17
+
+El proceso puede llegar a ser bastante engorroso la primera vez, debido a la cantidad de requisitos que nos pide. Pero más tarda lo que no se empieza. Debemos instalar en primer lugar [OpenJDK 17](https://adoptium.net/es/temurin/releases?variant=openjdk17&version=17&os=any&arch=any) para nuestra plataforma. Si estamos en Linux, quizá deseemos instalar un binario mediante los repos de nuestra distro. Si bien la documentación de Godot menciona que otras versiones más recientes están soportadas, no asegura compatibilidad total.
+
+#### Android Studio
+
+El siguiente requisito consiste en instalar el SDK de Android. Puede obtenerse de dos maneras, instalando [Android Studio](https://developer.android.com/studio?hl=es-419) o el [sdkmanager](https://developer.android.com/tools/sdkmanager?hl=es-419). Resulta más fácil la primera, pero aún requiere varios pasos que deben ser completados antes de poder siquiera exportar nuestro juego.
+
+Optaremos por seguir las instrucciones para Android Studio. Después de instalarlo, debemos ejecutarlo para completar la preparación del SDK. La instalación estándar que nos sugiere el "Setup Wizard" cumple la mayoría de los requisitos. Si la instalación ya había sido hecha antes, toca verificar que contemos con:
+
+- Android SDK Platform-Tools versión 35.0.0 o superior
+- Android SDK Build-Tools versión 35.0.1
+- Android SDK Platform 35
+- Herramientas de línea de comandos del SDK de Android (más reciente)
+
+También es necesario contar con NDK y CMake, ambos instalados y configurados. Si no es el caso o no estamos seguros, toca abrir un proyecto cualquiera e irnos al menú *Tools -> SDK Manager*. Ahí seleccionamos el apartado *SDK Tools* y habilitamos *NDK (side by side)*, *Android SDK Command-Line Tools (latest)* y *CMake*. Aparecerá un icono de "descarga" a su izquierda. Damos en *Aplicar*, aceptamos la estimación de espacio en disco y esperamos a su descarga e instalación. Cuando termine, solo presionamos *Finish* para poder cerrar la ventana.
+
+### Configurando Godot
+
+Nos vamos al menú *Editor -> Configuración del Editor* y buscamos el apartado *Exportar -> Android*. Ahí nos saldrán varios elementos. Nos enfocamos en los que se llaman "rutas": las ubicaciones en donde se han instalado tanto OpenJDK17 como el Android SDK. Deberían aparecer por defecto, si no es el caso, toca localizarlos. Por ejemplo, el SDK se encuentra en "~/Android/Sdk" y OpenJDK está en "/usr/lib/jvm/java-17-openjdk". Deben ser las carpetas raíz de la instalación, no donde está el ejecutable.
+
+El siguiente paso es crear el archivo de clave que exige Google, al menos hasta la fecha de elaboración de este documento. Nos dirigimos a la carpeta en la que queramos almacenar la dichosa "Debug Keystore" (una buena idea es crear una carpeta dentro del proyecto, llamarla `.keystore` y excluirla del control de versiones mediante el archivo `.gitignore`) y abrimos una terminal ahí (o el CMD en esa ubicación), en ella ejecutamos la siguiente línea de comandos:
+
+```bash
+keytool -v -genkey -keystore mygame.keystore -alias mygame -keyalg RSA -validity 10000
+```
+
+Donde debemos personalizar `mygame.keystore` y el alias. Por ejemplo, nuestro juego se llama Recolector, pues entonces nuestra línea queda:
+
+```bash
+keytool -v -genkey -keystore recolector.keystore -alias recolector -keyalg RSA -validity 10000
+```
+
+Se nos harán unas cuantas preguntas, como la contraseña (que no se nos olvide, además debe ser de más de 6 caracteres), nombre, puesto, organización, localidad, estado y código del país. Si realmente deseamos publicar en Google Play, estos datos deben ser reales. Al finalizar nos dirá que ha generado un archivo.
+
+### Exportando el ejecutable
+
+En teoría, ya debería haber estar todo configurado. Podemos comprobarlo si nos vamos a *Proyecto -> Exportar*, añadimos *Android (Ejecutable)* y no debería haber mensajes de error. Si llegara a haber alguno relacionado con la ausencia de algún componente, revisamos cuál es. Si por otro lado, se nos dice que "La plataforma de destino requiere compresión de texturas ETC2/ASTC...", damos clic en *Mostrar ajustes del proyecto* y ahí activamos *Importar ETC2 ASTC*. Damos clic en *Activar y reiniciar*. Godot se cerrará y volverá a abrir.
+
+Volvemos a la ventana de *Exportar* y debería estar todo resuelto. En la pestaña de *Opciones* nos aseguramos que el formato de exportación sea *APK*. Si deseamos optimizar ligeramente el tamaño de nuestro ejecutable, podemos marcar solo *arm64-v8a*. En el apartado *Keystore* van los datos que pusimos en la generación de la clave, como por ejemplo: en *Release* va la ruta al archivo de clave generado (`.../.keystore/recolector.keystore`); en *Usuario de Release* va el alias que le pusimos al juego (`recolector`) y en *Contraseña de Release* pues va la contraseña que pusimos.
+
+Enseguida le damos clic a *Exportar proyecto*, nos pedirá la ruta y el nombre, le pondremos `recolector.apk` y comenzará a generar el ejecutable. Aunque genere un par de archivos, el único necesario es el `.apk`. Podemos llevarlo a algún dispositivo móvil y probarlo.
+
+Con esto damos por finalizado el capítulo 5, que podría considerarse una mera introducción. Es momento de pasar a la parte fuerte, juegos de un género específico.
+
+
+
+
+

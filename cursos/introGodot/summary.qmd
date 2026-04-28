@@ -1,0 +1,3 @@
+# Trabajo a futuro
+
+Los tres proyectos abordados son apenas una entrada al vasto ámbito del desarrollo de experiencias interactivas. Godot ofrece mucho campo de acción, tal como juegos de tipo RPG, Roguelike, Metroidvanias, plataformeros o de peleas, incluyendo hasta aplicaciones de escritorio o para móviles, por ejemplo.

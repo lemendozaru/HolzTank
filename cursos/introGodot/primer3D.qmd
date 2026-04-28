@@ -1,0 +1,542 @@
+# Primer juego en 3D
+
+Crearemos ahora un juego sencillo en tres dimensiones, el cual nos permitirá consolidar lo aprendido en el juego anterior y obtener nuevas habilidades. Programaremos una tercera dimensión, no solamente en lo visual con su respectivo HUD, sino mecánicamente, ya que introduciremos el salto como tal. También abordaremos colisiones y capas físicas.
+
+Seguimos con la convicción de que las capturas de pantalla no serán necesarias, siempre y cuando se trabaje con el motor y nos ensuciemos las manos directa y personalmente.
+
+Este juego será una evolución del anterior, con la salvedad de que ahora sí podremos eliminar a nuestros enemigos al aplastarlos tras haber saltado sobre ellos.
+
+## Configurando el área de juego
+
+### Importando *assets*
+
+Comenzaremos mencionando que es necesario tener el programa *Blender* instalado en nuestro equipo, ya que la importación de modelos 3D así lo requieren. Así que instalemos dicho software y después regresamos acá.
+
+Continuamos importando los *assets* que están colgados en la plataforma del curso. El propio Godot nos preguntará sobre Blender y en caso de estar instalado y reconocido, nos lo dirá también. No olvidemos crear una carpeta llamada `assets`, que es donde llevaremos nuestros elementos al importarlos.
+
+### Creando el piso
+
+Siguiente paso, crear nuestra escena principal con un `Node` al cual llamaremos `Main`. Guardamos la escena con su respectivo nombre. Necesitamos un piso para que nuestro jugador no se caiga (y tampoco sus enemigos), por lo que agregaremos un nodo `StaticBody3D`, el cual es perfecto para paredes, techos o pisos. Pero por sí solo no será muy útil, necesitamos su `CollisionShape3D`. Agregamos el primer nodo como hijo de `Main` y el segundo como su "nieto". Cambiaremos el nombre de `StaticBody3D` a `Ground`.
+
+Volteemos hacia `CollisionShape3D`, ya que necesita tener una forma. En el inspector se la damos como *BoxShape3D*. En el viewport veremos que ahora aparece un cubo en el centro. Vamos a darle dimensiones más de "piso plano" a este elemento. Para ello, damos clic en la palabra *BoxShape3D* para desplegarla y cambiamos sus dimensiones: *Size X* a `60`, *Size Y* a `2` y *Size Z* a `60`. Podemos disminuir el zoom en el viewport para ver mejor el tamaño y forma de nuestro piso plano.
+
+Sin embargo, al ejecutar la escena no veremos nuestro piso, ya que es solo la caja de colisión. Si deseamos verlo, debemos agregar un nodo `MeshInstance3D` como hijo de `Ground`. En su propiedad *Mesh* debemos escogerle una: será `BoxMesh`. Ya elegido, toca darle clic al icono de cubo para desplegarlo y cambiar sus dimensiones para que coincidan con la caja de colisión.
+
+El siguiente paso es mover `Ground` un poco hacia abajo, una unidad, siendo específicos. Lo logramos seleccionando dicho nodo y en su propiedad *Transform -> Position Y* cambiarla a `-1`.
+
+### Agregando luces
+
+Seleccionamos `Main` y le agregamos como hijo un nodo `DirectionalLight3D`. Acto seguido, lo moveremos hacia arriba arrastrando la flecha verde y lo rotaremos sobre el eje $x$ (sobre el arco rojo) hasta conseguir que el suelo quede iluminado por completo. En el inspector, sección *Light3D* activamos la propiedad *Shadow*.
+
+## Creando al jugador
+
+### Configurando lo visual
+
+Creamos una escena nueva y seleccionamos un nodo `CharacterBody3D` como raíz, para luego renombrarlo `Player`. Este tipo de nodo es similar al `RigidBody2D` que usamos como enemigo en el juego pasado en cuanto a que puede interactuar con el entorno, pero es diferente en tanto que no es controlado por las físicas del motor, sino por nosotros mismos.
+
+Agregamos como hijo de `Player` un nodo `Node3D` y lo nombramos `Pivot`. Enseguida nos dirigimos al Sistema de archivos y tras haber desplegado la carpeta `assets/art`, arrastramos el archivo `player.glb` para soltarlo en este último nodo. Se debería crear otro `Node3D` como hijo de `Pivot`. Le cambiamos el nombre a `Character`. Cabe mencionar que los archivos con extensión *.glb* son generados en Blender y exportados a ese formato.
+
+Observando nuestro árbol de nodos, podemos ver que `Player` no tiene una forma de colisión. Lo arreglamos agregéndole un nodo hijo `CollisionShape3D` con forma de esfera. La modificamos de manera que se ajuste lo mejor posible a nuestro modelo.
+
+### Creando el mapeado de entradas
+
+Crearemos las cuatro entradas correspondientes a las direcciones y la acción de saltar. Dejamos la elección al criterio y comodidad al lector. Pero el estándar dicta que se utilicen las teclas direccionales y el arreglo WASD, además de lo usual en un control (cruceta o palanca izquierda) para direcciones; tecla {{< kbd Espacio>}} y botón **A** en control para salto.
+
+### Programando al jugador
+
+Creamos un script para el nodo `Player` y lo guardamos en una carpeta nueva que nombraremos `scripts/`. Podemos escoger con plantilla o sin ella, no importa, ya que crearemos nuestro propio código.
+
+Supongamos que elegimos una plantilla vacía, así que declaramos una variable que se refiera a la rapidez de movimiento, la gravedad y la velocidad del jugador.
+
+```gdscript
+extends CharacterBody3D
+
+# qué tan rápido se mueve el jugador en m/s
+@export var speed = 14
+
+# aceleración de caida en m/s2
+@export var fall_acceleration = 75
+
+var target_velocity = Vector3.ZERO
+```
+
+La última variable es un vector que representa el movimiento y que combina una velocidad con una dirección. En un juego 3D debemos ser más cuidadosos con las medidas, ya que estas son más cercanas a las de la vida real que en un juego en dos dimensiones.
+
+Ahora programaremos el movimiento, considerando el vector de dirección de entrada mediante el objeto `Input` dentro de la función `_physics_process()`:
+
+```gdscript
+func _physics_process(delta: float):
+	# creamos una variable local para almacenar la dirección de entrada
+	var direction = Vector3.ZERO
+
+	# checamos cada entrada y actualizamos la dirección acorde
+	if Input.is_action_pressed("move_left"):
+		direction.x -= 1
+	if Input.is_action_pressed("move_right"):
+		direction.x += 1
+	if Input.is_action_pressed("move_forward"):
+		# en 3D, el suelo se representa con el plano XZ
+		direction.z -= 1
+	if Input.is_action_pressed("move_back"):
+		direction.z += 1
+```
+
+Usamos esta función en lugar de `_process()` ya que lo que estaremos verificando es el comportamiento de un cuerpo sometido a las físicas del motor.
+
+Cabe recordar que debemos normalizar las entradas, esto para evitar que el jugador se mueva más rápido en diagonal. También debemos pensar en calcular la dirección en la que mira `Pivot`. Lo anterior lo conseguimos agregando las siguientes líneas dentro de `_physics_process`:
+
+
+```gdscript
+if direction != Vector3.ZERO:
+		direction = direction.normalized()
+		# configurando la propiedad Basis que afecta la rotación
+		$Pivot.basis = Basis.looking_at(direction)
+```
+
+Toca actualizar el vector velocidad, considerando que debemos calcular la velocidad en el suelo y la velocidad de caída en forma independiente. Escribimos las siguientes líneas fuera de la condicional, pero aún dentro de la función `_physics_process()`:
+
+```gdscript
+# vector velocidad en suelo
+	target_velocity.x = direction.x * speed
+	target_velocity.z = direction.z * speed
+
+	# velocidad de caída
+	if not is_on_floor(): # Si está en el aire, caerá hacia el suelo
+		target_velocity.y = target_velocity.y - (fall_acceleration * delta)
+
+	# Moviendo al jugador
+	velocity = target_velocity
+	move_and_slide()
+```
+
+La función `is_on_floor` devuelve `true` si el caracter colisiona con el suelo en cada frame. Esto nos permite aplicar la velocidad de caída solo cuando este se encuentra en el aire. El motor de físicas solo detecta interacciones con suelo, paredes y otros cuerpos durante un frame si hay movimiento o colisiones.
+
+Por último, el método `move_and_slide()` que pertenece a los nodos del tipo `CharacterBody` permite mover al cuerpo suavemente. Si en un momento dado el personaje choca con algo, el motor tratará de darle un movimiento de deslizamiento automáticamente.
+
+### Probando al jugador
+
+Instanciaremos el jugador a la escena `Main`, pero debemos considerar que en los juegos 3D debe haber una cámara agregada por nosotros al viewport, ya que no se verá nada en caso de que no lo hagamos.
+
+Después de instanciar `player.tscn` a `Main`, seleccionamos este último nodo y agregamos como hijo un nodo `Marker3D` y le renombramos `CameraPivot`. Con este seleccionado, le agregamos como hijo un nodo `Camera3D`.
+
+Podremos notar que si seleccionamos el nodo `Camera3D` en el árbol, aparecerá en el viewport un checkbox de Vista Previa. Si lo habilitamos, nos mostrará lo que ve la cámara recién agregada. Esto resulta útil para poder configurar el pivote de la cámara que agregamos, pero en una sola vista puede no ser muy práctico. Así que vayamos al botón *Ver* en el viewport y seleccionamos *2 viewports*. En uno dejamos la vista perspectiva y en el otro habilitamos la vista de cámara.
+
+Seleccionamos la `Camera3D` y la movemos unos $20$ m a lo largo del eje $z$ (la flecha azul). Enseguida, seleccionamos `CameraPivot` y lo rotamos $45$° en el eje $x$. Debería de verse mucho mejor nuestra vista de cámara. Si no nos convence, juguemos con las distancias y los ángulos hasta que encontremos una vista que nos guste.
+
+Podemos probar el juego tras correrlo. Hemos de notar que el personaje se cae por las orillas (lo que significa que están trabajando las físicas) y que existen huecos en la vista. Vamos a ir arreglando esas cosas, en especial lo de la vista, ya que aunque sí está en tres dimensiones, estas no ayudan al jugador a calcular bien las distancias, por lo que debemos cambiar la perspectiva a una vista ortogonal.
+
+Seleccionamos la cámara y en el inspector cambiamos la propiedad *Proyection* a `Orthogonal` y *Size* a $20$ (o la distancia que hayamos puesto antes). Probemos de nuevo: sigue estando en tres dimensiones pero resulta más preciso el gameplay.
+
+Quizá notemos las sombras algo extrañas o "borrosas". Si ese es el caso, podemos jugar con la propiedad *Far*, que nos permite configurarlas. No se recomienda utilizar valores menores a $100$, pero para este juego, ese valor parece comportarse bastante bien.
+
+## Creando a los enemigos
+
+Creamos una escena nueva con un nodo raíz `CharacterBody3D` que renombramos como `Mob`. Le agregaremos un nodo `Node3D` como hijo y le ponemos `Pivot`. Ahora, desde el Sistema de archivos arrastramos `mob.glb` a `Pivot` y ya tendremos su modelo en escena. Le cambiamos el nombre al nuevo nodo para que quede como `Character`.
+
+Ahora toca agregarla una forma de colisión a `Mob`. Recordemos, primero agregamos `CollisionShape3D` como hijo de `Mob` y luego en el inspector le asignamos una *BoxShape3D*. La ajustamos lo mejor posible, haciendo uso de los manejadores. No olvidemos que la caja debe ser ligeramente más pequeña que el modelo 3D, para que así no afecte al jugador "a distancia". Sin embargo, mediante prueba y error podemos seleccionar un tamaño adecuado para la misma.
+
+### Eliminar enemigos fuera de pantalla
+
+Los enemigos aparecerán en pantalla de manera aleatoria, pero deseamos que al salir de la pantalla simplemente desaparezcan, ya que no deseamos sobrecargar la memoria del juego. Para ello utilizaremos el nodo `VisibleOnScreenNotifier3D`, el cual nos ahorra el tener que aplicar el *pooling*, que es una técnica utilizada en lenguajes más generales como C# o Lua. Godot ya tiene esto resuelto.
+
+Seleccionamos `Mob` y le agregamos dicho nodo como hijo. Veremos que aparece un cubo rosa, al cual le podemos cambiar el tamaño, considerando que el objeto desaparece cuando la totalidad de este sale de pantalla.
+
+### Programando al enemigo
+
+Adjuntemos un script a `Mob`. Usaremos una plantilla vacía e iremos agregando el siguiente código:
+
+```gdscript
+extends CharacterBody3D
+
+# velocidad mínima del enemigo en m/s
+@export var min_speed = 10
+# velocidad máxima del enemigo en m/s
+@export var max_speed = 18
+
+
+func _physics_process(_delta):
+	# agregamos el guón bajo para evitar advertencias con delta
+	move_and_slide()
+```
+
+Usaremos velocidades mínima y máxima para aleatorizar la velocidad de cada enemigo a la vez que movemos y deslizamos al enemigo cada frame.
+
+Enseguida crearemos una función que nos permita calcular el vector de movimiento del enemigo, considerando que aparecerá en una posición aleatoria en pantalla y deberá voltear hacia el jugador, dirigiéndose hacia este pero con cierto margen (no queremos que el enemigo persiga de manera perfecta al jugador, sería un juego bastante difícil).
+
+```gdscript
+# Esta función será llamada desde la escena Main
+func initialize(start_position, player_position):
+	# Colocamos el enemigo en su posición inicial
+	# y lo rotamos hacia el jugador
+	look_at_from_position(start_position, player_position, Vector3.UP)
+	# Rota al enemigo aleatoriamente en un rango de -45 a +45°
+	# para no irse directamente hacia el jugador
+	rotate_y(randf_range(-PI / 4, PI / 4))
+```
+
+Ya que colocamos y orientamos al enemigo, ahora debemos agregarle una velocidad aleatoria. Para ello usamos las variables definidas al inicio. Luego haremos que el enemigo se mueva en la dirección a la que está viendo.
+
+```gdscript
+# Calculamos una velocidad random
+	var random_speed = randi_range(min_speed, max_speed)
+	# Calculamos la velocidad del enemigo
+	velocity = Vector3.FORWARD * random_speed
+	# Rotamos el vector de velocidad de acuerdo al enemigo
+	# para que se mueva hacia donde está girado
+	velocity = velocity.rotated(Vector3.UP, rotation.y)
+
+```
+
+Ahora toca eliminar los enemigos que salgan de pantalla. Seleccionamos el nodo `VisibleOnScreenNotifier3D` y en el panel *Señales* damos clic en `screen_exited()` y conectamos a `Mob`. En la función que esto genera escribiremos la línea `queue_free()`.
+
+## Agregando los enemigos
+
+No hemos configurado el tamaño de pantalla. Haremos eso antes de cualquier cosa. Nos vamos a *Proyecto -> configuración del proyecto -> General -> Ventana* y cambiamos las medidas a $720$ de ancho por $540$ de alto.
+
+### Crear la ruta de generación
+
+Una limitación de Godot es que para generar la ruta de generación necesitamos agregar elementos temporales o *dummys* que nos permitan ver fuera de la cámara. Para ello usaremos unos cilindros auxiliares. Seleccionamos `Main` y le agregamos un `Node3D`, que llamaremos `Cylinders`. A este último le agregamos como hijo otro nodo `MeshInstance3D`. En su propiedad *Mesh* le asignamos una `CylinderMesh` y aparecerá, propiamente dicho, un cilindro.
+
+Notaremos que este cilindro es algo difícil de ver por su color. Toca cambiarlo yendo al inspector y dando clic en el icono de cilindro. Esto desplegará varias propiedades, pero la que nos importa es *Material*. Damos clic ahí y luego en *StandardMaterial3D*. Volvemos a clicar en la esfera y desplegamos el apartado *Albedo*. Ahora cambiamos su propiedad *Color* a uno que sea fácil de distinguir. Damos {{<kbd Enter>}}.
+
+Ahora necesitamos mover el cilindro justo fuera de la cámara, en la esquina superior izquierda. Podemos apoyarnos en la rejilla como visual, pero sí se sugiere que trabajemos con ajuste inteligente (el icono del imán que se encuentra sobre el viewport). También deberíamos cambiar la perspectiva a *Superior*, dando clic en el el eje $y$ del gizmo que está arriba a la derecha en el viewport.
+
+Con el cilindro debidamente colocado, lo duplicamos dando clic derecho y luego en *Duplicar* o utilizando {{<kbd Ctrl+D>}}. Al cilindro nuevo lo llevaremos a la esquina superior derecha siguiendo el mismo criterio.
+
+Ya que esté el segundo cilindro bien ubicado, toca duplicar ambos, para ya tener 4 de ellos. Seleccionamos ambos y los duplicamos. Ahora los posicionamos en las esquinas inferiores.
+
+Agregaremos un nodo `Path3D` como hijo de `Main`, le llamamos `SpawnPath` y veremos que aparecen algunos botones nuevos sobre el viewport. Damos clic en el que se llama *Agregar Punto* y damos clic en el centro de cada cilindro para crear su correspondiente punto. Al finalizar, le picamos al botón *Cerrar curva*.
+
+Ahora agregamos como hijo del último nodo creado otro llamado `PathFollow3D` y le llamamos `SpawnLocation`.
+
+### Apareciendo los enemigos
+
+Le agregaremos un script a `Main`. Dentro del mismo agregamos la siguiente línea justo debajo de `extends Node`
+
+```gdscript
+@export var mob_scene: PackedScene
+```
+
+Y en el inspector cargamos la escena `mob.tscn`. Después, agregamos como hijo a `Main` un nodo `Timer` que llamaremos `MobTimer`. En el inspector cambiamos su *Wait Time* a `0.5` y activamos su propiedad *Autostart*. Luego nos vamos a *Señales* y damos doble clic en `time_out()` para conectarla a `Main`.
+
+Vamos a programar la generación de enemigos mediante la instanciación de la escena enemigo, el muestreo de una posición aleatoria en la ruta de generación, obtener la posición del jugador, inicializando al enemigo, pasándole la posición aleatoria y la posición del jugador y agregando el enemigo como hijo del nodo `Main`.
+
+```gdscript
+func _on_mob_timer_timeout():
+	# creamos una nueva instancia de la escena Mob
+	var mob = mob_scene.instantiate()
+
+	# Elegimos un lugar aleatorio dentro de SpawnPath
+	# Almacenamos la referencia de SpawnLocation
+	var mob_spawn_location = get_node("SpawnPath/SpawnLocation")
+	# y le damos un espaciado aleatorio
+	mob_spawn_location.progress_ratio = randf()
+
+	var player_position = $Player.position
+	mob.initialize(mob_spawn_location.position, player_position)
+
+	# aparecemos al mob por agregarlo a la escena principal
+	add_child(mob)
+```
+
+la función `randf()` produce números al azar entre 0 y 1, esto es lo que `progress_ratio` del nodo `PathFollow` espera: 0 es el inicio de la ruta, 1 es el fin de la ruta. La ruta que hemos creado está alrededor del viewport de la cámara, así que cualquier valor al azar entre 0 y 1 será una posición al azar a lo largo del borde del viewport.
+
+Probemos la escena, no debería haber errores lógicos, pero sí en cuanto a jugabilidad ya que el juego naturalmente está inconcluso.
+
+## Implementando las mecánicas
+
+Agregaremos la capacidad de saltar y aplastar a los enemigos, pero para ello necesitamos introducirnos a las **capas físicas**.
+
+### Capas y máscaras
+
+Los cuerpos físicos cuentan con dos propiedades relacionadas con las físicas: las capas y las máscaras. Las capas definen el lugar físico al que pertenece un cuerpo, mientras las máscaras definen cuáles capas podrán ser detectadas por estos mismos cuerpos. Esto nos permite filtrar interacciones de físicas, controlar rendimiento y ahorrar incluso hasta código.
+
+Las capas y máscaras se identifican por números. Por defecto, todos los cuerpos físicos y áreas están configurados a capa y máscara `1`, por lo que siempre colisionarán entre ellos.
+
+Es posible darle nombre a las capas para identificarlas mejor.
+
+#### Cambiar el nombre a las capas
+
+Nos dirigimos a *Proyecto -> Configuración del Proyecto -> General* y buscamos el apartado *Nombres de capas -> Físicas 3D*. Ahí están enlistadas las distintas capas con un campo al lado derecho. Allí podemos asignarles un nombre. Nombremos las primeras tres como *player*, *enemies* y *world*, respectivamente.
+
+#### Asignando capas y máscaras
+
+Nos dirigimos a `main.tscn` y seleccionamos `Ground`. Desplegamos la sección *Collision* del inspector y en *Layer* marcamos la tercera (*world*) y desmarcamos la primera (*player*), ya que el suelo pertenece al lugar físico "mundo". En cuanto a *Mask*, recordemos que esta propiedad permite "escuchar" otras capas, pero el suelo no necesita escuchar algo, así que desmarcamos la primera.
+
+En la escena `player.tscn` seleccionamos el nodo `Player` y en *Capas* lo dejamos en el `1` (el jugador pertenece al lugar físico "jugadores"), pero en *Mask*  desactivamos la primera pero activaremos tanto la segunda como la tercera, ya que sí necesitamos "interactuar" con los enemigos y el mundo.
+
+Para terminar, seleccionamos el nodo `Mob` de `mob.tscn` y repetimos el proceso, pero solo activando la capa `2` y desactivando las máscaras. Esto se debe a que los enemigos sí pertenecen al lugar "enemigos", obviamente, pero no queremos que interactúen entre ellos (que no choquen entre sí) y tampoco tienen gravedad asignada, por lo que en realidad tampoco chocan con el suelo por defecto.
+
+### Agregando el salto
+
+Abrimos `player.gd` y justo después de la línea de la variable `fall_acceleration` agregamos una nueva variable:
+
+```gdscript
+@export var jump_impulse = 20
+```
+
+Ahora, dentro de `func _physics_process()`, justo antes de `move_and_slide()` agregamos las líneas:
+
+```gdscript
+# Saltar solo si el jugador está en el suelo y se presiona "jump"
+if is_on_floor() and Input.is_action_just_pressed("jump"):
+	target_velocity.y = jump_impulse
+```
+
+Tengamos en cuenta que el eje $y$ en 3D es positivo hacia arriba, contrario al entorno 2D.
+
+### Aplastando al enemigo
+
+Como parte de la lógica del juego, necesitamos saltar encima de un enemigo y ser capaces de distinguir que fue así y no sobre el suelo. Para ello crearemos un grupo que englobe a los enemigos. Con `Mob` seleccionado en la escena `mob.tscn`, nos vamos al panel *Grupos* y creamos uno nuevo al cual llamaremos *mobs*.
+
+#### Programando el aplastamiento
+
+En `player.gd` agregaremos otra variable
+
+```gdscript
+# Impulso vertical aplicado al caracter tras aplastar un enemigo (m/s)
+@export var bounce_impulse = 16
+```
+
+Ahora un poco de teoría. Cuando utilizamos la función `move_and_slide()` el motor aplica movimiento al caracter para irlo "deslizando" y así obtener animaciones más suaves. Si bien esto ahorra cierto trabajo, implica que al caer sobre un enemigo se estarán mandando múltiples señales de colisión. Necesitamos detectar que el jugador ha saltado sobre un enemigo, luego eliminarlo, hacer que rebotemos y volver a ver si hay colisiones. Si no las hay en un frame, el código no se ejecutará. Agreguemos las siguientes líneas a `_physics_process()`, justo antes de `move_and_slide()`:
+
+```gdscript
+# Iterar a través de todas las colisiones por frame
+	for index in range(get_slide_collision_count()):
+		# Tomamos una de las colisiones con el caracter
+		var collision = get_slide_collision(index)
+
+		# Si hay colisiones duplicadas con un enemigo en un frame único
+		# el enemigo será borrado después de la primera y una segunda llamada
+		# a get_collider retornará null, llevando a un apuntador nulo al llamar
+		# collision.get_collider().is_in_group("mob")
+
+		# Este bloque previene el procesar colisiones duplicadas
+		if collision.get_collider() == null:
+			continue
+
+		# Si el collider es con un enemigo
+		if collision.get_collider().is_in_group("mob"):
+			var mob = collision.get_collider()
+			# verficaremos que lo hemos golpeado desde arriba
+			if Vector3.UP.dot(collision.get_normal()) > 0.1:
+				# Si fue así, lo aplastaremos y rebotaremos
+				mob.squash()
+				target_velocity.y = bounce_impulse
+				# Prevenimos posteriores llamadas duplicadas
+				break
+
+```
+
+La función `get_slide_collision()` devuelve un objeto llamado `KinematicCollision3D` que contiene información sobre dónde y cómo ocurrió la colisión. Así, utilizamos su función `get_collider()` para verificar si hemos chocado con un "mob" o enemigo, llamando a `is_in_group()` en él.
+
+Para verificar que estamos cayendo arriba de un enemigo, usamos el producto punto de vectores: `Vector3.UP.dot(collision.get_normal()) > 0.1`. La normal de colisión es un vector 3D que es perpendicular al plano donde ocurrió la colisión. El producto escalar nos permite compararlo con la dirección hacia arriba.
+
+Con los productos escalares, cuando el resultado es mayor que `0`, los dos vectores están en un ángulo menor a 90 grados. Un valor mayor a `0.1` nos indica que estamos aproximadamente encima del enemigo.
+
+Después de completar la lógica de aplastado y rebote, terminaremos el bucle de manera temprana con la sentencia `break` para prevenir llamadas duplicadas a `mob.squash()`, que de otro modo puede resultar en contar el puntaje muchas veces por cada muerte de enemigo.
+
+Debemos notar que estamos llamando a una función indefinida, `mob.squash()`. Abrimos el script `mob.gd` y en la parte superior del script, definiremos una nueva señal llamada `squashed`.
+
+```gdscript
+# Emitida cuando caemos encima del enemigo
+signal squashed
+```
+
+Y en la parte inferior, agregaremos la función `squash()`, donde emitimos la señal y destruimos el enemigo.
+
+```gdscript
+func squash():
+	squashed.emit()
+	queue_free()
+```
+
+Por si no lo hemos hecho, asignemos `main.tscn` como la escena principal y probemos el juego.
+
+### Eliminando al jugador
+
+Si ya probamos el juego pudimos darnos cuenta que ya eliminamos a los enemigos si saltamos sobre ellos (incluso con tocarlos). Pero deseamos agregar el hecho de que seamos nosotros quienes perdamos si el enemigo hace contacto mientras estemos en el suelo. Un nodo que nos viene muy bien para este caso es el `Area3D`, Lo vamos a agregar como hijo de `Player` en su escena `player.tscn` y le llamaremos `MobDetector`. Luego le agregamos su respectiva `CollisionShape3D` con la forma *CylinderShape3D*.
+
+Aquí cabe mencionar una manera en la que deberíamos configurar el cilindro de colisión: 1. hacerlo más ancho que la esfera del jugador para que así nos pegue el enemigo antes que nosotros a ellos y 2. posicionarlo casi tan alto como al caracter para que los enemigos no lo toquen si estamos saltando.
+
+Con `MobDetector` seleccionado, vamos al inspector y desactivamos la propiedad *Monitoreable* para impedir que otros nodos detecten esta área. La propiedad *Monitoring* le permite al nodo detectar, así que la dejamos activada. Desactivaremos las capas de colisión y la máscara *player*, pero activamos la máscara *enemies*, que son los únicos elementos con los que nos interesa interactuar.
+
+Seguimos con `MobDetector` seleccionado y en sus señales damos doble clic en `body_entered()` para conectar dicha señal a `Player`. Esta señal solo será emitida si entra un enemigo, gracias a la máscara seleccionada (*enemies*).
+
+Es momento de agregar las últimas líneas de código. Primero, para emitir una señal ponemos en la parte superior de `player.gd`:
+
+```gdscript
+# Emitida cuando el jugador es golpeado por el enemigo
+signal hit
+```
+
+Para destruir al jugador, justo después de `move_and_slide()`
+
+```gdscript
+func die():
+	hit.emit()
+	queue_free()
+```
+
+Y dentro de la función `_on_mob_detector_body_entered()` simplemente:
+
+```gdscript
+die()
+```
+
+### Finalizando el juego
+
+Abrimos `main.tscn`, seleccionamos `Player` y en sus señales conectaremos `hit()` al nodo `Main`. En la función que se crea agregamos la línea
+
+```gdscript
+$MobTimer.stop()
+```
+
+## Haciendo más amigable al juego
+
+Agregaremos la puntuación, la música y la manera de reiniciar el juego. Registraremos el puntaje en una variable y la mostraremos en pantalla mediante una etiqueta de texto.
+
+En la escena principal agregaremos un nodo `Control` como hijo de `Main` y le llamaremos `UserInterface`. Nos llevará automáticamente al viewport 2D donde podremos editar nuestra UI.
+
+Agregamos una etiqueta `Label` y la renombramos `ScoreLabel`. En su propiedad *Text* escribimos "Puntaje: 0", solo con fines de marcar tamaños. Desearemos cambiar el color de letra, por lo que en el inspector, en el apartado *Theme Overrides* buscamos *Colors* y activamos la casilla *Font Colors* y en el recuadro que está al lado cambiamos a un tono oscuro. En este caso, se eligió el negro. Movemos la etiqueta un poco lejos de la esquina en la que estaba.
+
+### Creando un tema de interfaz
+
+Con `UserInterface` seleccionado, nos vamos al inspector en su apartado *Theme* y propiedad *Theme*. Le damos clic donde pone [vacío] y luego en *Nuevo Theme*. Volvemos a dar clic en el icono que aparece para que muestre las propiedades del tema y abajo, una vista previa del mismo. En el inspector podemos observar las pocas propiedades: *Escala*, *Fuente predeterminada* y *Tamaño de Fuente predeterminado*. La segunda propiedad nos pide un archivo de fuentes, para lo cual tenemos uno llamado `Montserrat-Medium.ttf`y está en la carpeta `assets/fonts/`. El tamaño lo cambiamos a `22`.
+
+### Almacenando el puntaje
+
+Agregaremos un script al nodo `ScoreLabel`, lo guardamos como `scripts/score_label.gd` y agregaremos justo después del `extends`
+
+```gdscript
+var score = 0
+```
+
+La puntuación debe aumentar en `1` cada vez que aplastemos un enemigo. Ya que instanciamos los enemigos mediante código, también realizaremos la conexión a su señal de la misma manera.
+
+Abrimos `main.gd` y escribimos en la parte inferior de la función `_on_mob_timer_timeout()`:
+
+```gdscript
+# Conectamos el mob a la etiqueta de puntaje para actualizarla
+	mob.squashed.connect($UserInterface/ScoreLabel._on_mob_squashed.bind())
+```
+
+Estas líneas permiten que el nodo `ScoreLabel` intercepte la señal `squashed` de los enemigos y llame a la función `_on_mob_squashed`.
+
+Volvamos a `score_label.gd`para definir la función `_on_mob_squashed()`. Allí incrementaremos el puntaje y actualizaremos el texto en pantalla.
+
+```gdscript
+func _on_mob_squashed():
+	score += 1
+	text = "Score: %s" % score
+```
+
+La última línea utiliza el valor de la variable `score` para reemplazar el símbolo `%s`. Al utilizar esta función, Godot convierte automáticamente los valores a texto, lo cual es conveniente para mostrar texto en etiquetas.
+
+Ya podríamos probar el juego y ver que tras aplastar algunos enemigos, sí aumenta el puntaje.
+
+### Reiniciar el juego
+
+Vamos a mostrar un mensaje en pantalla cuando el jugador muera y nos pondremos a espera una acción. Volvemos a `main.tscn` y seleccionamos `UserInterface`, le agregamos un nodo `ColorRect` y lo llamamos `Retry`. Lo vamos a usar como una superposición que permita oscurecer la pantalla completa. Debido a eso, le aplicaremos un anclaje *Completo*. Si vemos que no toma el tamaño de la pantalla, entonces seleccionamos `UserInterface` y le aplicamos el mismo anclaje. Volvemos a seleccionar `Retry` y le cambiamos el color a negro, seleccionando el recuadro blanco al lado de la propiedad *Color* y poniendo un cero en las tres cajas (R, G y B). Para darle transparencia debemos modificar el valor A (alfa) a un aproximado de `100`. Ahora le agregamos un nodo `Label` a `Retry` y escribimos en su campo "Presiona Enter para reiniciar" y le aplicamos un anclaje de *Centro*.
+
+Abriremos `main.gd` y agregamos la función `_ready()` agregamos la línea
+
+```gdscript
+func _ready():
+	$UserInterface/Retry.hide()
+```
+
+Con esa línea escondemos la superposición. Pero la mostraremos cuando el jugador pierda con la siguiente línea agregada a `func _on_player_hit()`
+
+```gdscript
+$UserInterface/Retry.show()
+```
+
+Con lo anterior resuelto, ahora debemos habilitar la lectura de la tecla {{<kbd Enter>}}. Utilizaremos una función predefinida llamada `_unhandled_input()` que puede ser detonada con cualquier entrada, aunque aquí la vamos a limitar a solo esperar la tecla específica (con la acción predeterminada "ui_accept").
+
+```gdscript
+func _unhandled_input(event):
+	if event.is_action_pressed("ui_accept") and $UserInterface/Retry.visible:
+		# esto reinicia la escena actual
+		get_tree().reload_current_scene()
+```
+
+La función `get_tree()` nos permite acceder al objeto global `SceneTree`, lo que nos permite recargar y reiniciar la escena actual.
+
+### Agregando música
+
+Anteriormente hemos utilizado el `AudioStreamPlayer2D` y podríamos pensar en volver a hacerlo. Pero debemos tener en cuenta que Godot nos permite cargar nodos fuera de escena para así no obligar a que dichos nodos carguen en cada reinicio, lo que los hace volver a empezar cada vez. Esta propiedad del motor se conoce como *autoloads* o *autocargas* y haremos uso de ella en este momento para conseguir que la música siempre se esté reproduciendo en segundo plano.
+
+Creamos una escena nueva y le pondremos como raíz un `AudioStreamPlayer`, así, sin 2D ni 3D. Este es útil cuando no queremos manejar posiciones o distancias en la emisión del sonido. Es decir, queremos que simplemente suene. Le cambiamos el nombre a `MusicPlayer` y guardamos la escena como `music_player.tscn`. Cargaremos en la propiedad *Stream* el archivo `House In a Forest Loop.ogg` que se encuentra en `assets/art` y activamos su propiedad *Autoplay* para que se reproduzca al iniciar el juego.
+
+Es momento de registrar esta música como una *autocarga*. Debemos ir a la configuración del proyecto y entrar en la pestaña *Globales* en su apartado *Autoloads*. Ahí en *Ruta* cargaremos `music_player.tscn` mediante el navegador que desplegará. Debería quedar más o menos como `res://scenes/music_player.tscn`. Presionamos el botón de *Añadir*. Podemos guardar el proyecto y probarlo.
+
+## Retoques estéticos
+
+Godot cuenta con herramientas de animación incorporadas, algunas visuales y otras accesibles mediante código. Vamos a entrar un poco en este amplio abanico de opciones para darle más dinamismo al juego.
+
+### El editor de animación
+
+Abrimos la escena `player.tscn` y seleccionaremos `Player` y le agregamos un nodo `AnimationPlayer`, lo cual hará que aparezca el editor de animación como un panel en la parte inferior de la pantalla. Veremos que cuenta con una barra de herramientas, un menú de animaciones, un editor de pistas y algunas opciones más. Creemos una animación, dando clic en el botón *Animación* y luego en *Nueva*. Le llamaremos "float". Vamos a habilitar unas cuantas cosas dando clic en sus respectivos botones: primero, que la animación se reproduzca desde el inicio (Reproducción Automática al cargar); segundo, que se reproduzca en bucle (Loop de animación); y tercero, fijaremos el panel para que no se pliegue al momento de seleccionar otras partes de Godot (Fijar AnimationPlayer).
+
+La duración de la animación la dejaremos en 1.2 s (se encuentra en la caja de texto a la izquierda del botón de loop de animación). Podremos notar que la cinta gris se ha reducido, la cual indica el inicio y el final de nuestra animación. También debemos notar la barra vertical azul: es el cursor del tiempo. Hay además un deslizador en la parte inferior derecha del panel: nos permite acercar o alejar la línea de tiempo.
+
+### Animando al jugador
+
+El nodo `AnimationPlayer` nos permite animar muchas propiedades en tantos nodos como necesitemos. Pero para ello, debemos insertar o crear fotogramas clave, los cuales entran en el punto del tiempo en el que se encuentre el cursor del tiempo.
+
+Vamos a insertar las primeras claves. Seleccionamos `Character` y en el apartado *Transform* daremos clic en las llaves que se encuentran en *Position* y *Rotation*. En ambas crearemos pistas *RESET*. Aparecerán dos pistas en el editor con su respectivo icono de un diamante, lo cual nos indica que son fotogramas clave.
+
+Movamos la clave de posición a `0.3` y la de rotación a `0.1` segundos. Ahora llevaremos el cursor de tiempo a los `0.5` s, escribiendo dicho valor en la caja que está a la derecha del botón de reproducir.
+
+En el inspector editamos *Position Y* a `0.65` y *Rotation X* a `8`. Si no vemos nada en el inspector, volvemos a seleccionar `Character`. Creamos claves para ambas propiedades sin cambiar nada más.
+
+Ahora movemos la clave de posición a `0.7` s tras arrastrarla por la línea de tiempo. Después nos llevamos el cursor a los `1.2`s. Cambiamos *Position Y* a `0.35` y *Rotation X* a `-9`, creamos claves justo en esos puntos. Previsualicemos las animaciones dando clic en *reproducir*.
+
+Si bien la animación no está mal, tampoco es muy natural. Esto se debe a que Godot interpola las claves e intenta darles una transición entre cada una y esta transición está configurada de manera lineal. Debemos cambiar eso.
+
+Seleccionamos las primeras dos claves y en el inspector arrastramos hacia la izquierda la línea en *Easing* para formar una curva convexa a la izquierda con valor aproximado a `0.420`. Seleccionamos la siguiente clave y le damos un curvado convexo a la izquierda de aproximadamente `0.440`. Luego aplicamos lo contrario a la siguiente clave, hacerla convexa a la derecha con un valor de `0.206`. Guardamos y probamos. Veremos que ahora nuestro caracter flota y se ve más "animado".
+
+Un último punto, podemos controlar la velocidad de la animación mediante código. Consideremos que el caracter debería flotar más rápido cuando se mueve, así que lo implementamos en la función `_physics_process()` de `player.gd`, justo después de la verificación de movimiento, quedando como sigue:
+
+```gdscript
+if direction != Vector3.ZERO:
+		direction = direction.normalized()
+		# configurando la propiedad Basis que afecta la rotación
+		$Pivot.basis = Basis.looking_at(direction)
+		# hace más rápidas las animaciones
+		$AnimationPlayer.speed_scale = 4
+	else:
+		$AnimationPlayer.speed_scale = 1
+```
+
+Algo más, `Pivot` puede también modificar las animaciones. Para probar el punto, agreguemos la siguiente línea al final de lo que acabamos de escribir, pero fuera del `else`:
+
+```gdscript
+# arquearse al saltar
+$Pivot.rotation.x = PI / 6 * velocity.y / jump_impulse
+```
+
+### Animando al enemigo
+
+Una propiedad muy útil de las animaciones en Godot es que podemos reutilizarlas en nodos o escenas que tengan la misma estructura. Por ejemplo, el jugador y los enemigos cuentan con nodos `Pivot` y `Character` en la misma jerarquía, por lo que podemos copiar las animaciones de uno al otro. Veamos cómo.
+
+1. Abrimos `player.tscn` y seleccionamos su `AnimationPlayer`, luego damos clic en el botón *Animación* del editor de animaciones y escogemos la opción *Gestionar animaciones...*. Luego damos clic en el botón *Copiar animación al portapapeles* de la animación "float" y aceptamos.
+
+2. Abrimos `mob.tscn`, seleccionamos `Mob` y le agregamos un `AnimationPlayer`. Lo seleccionamos y volvemos a escoger *Gestionar animaciones...* en el botón *Animación* de su respectivo editor de animaciones, pero ahora seleccionamos *Nueva librería*. Damos clic en *Aceptar*, sin escribir nada. Toca darle al botón de *Pegar animación en la librería desde el portapapeles* y "float" debería aparecer en la ventana. Ya solo aceptamos.
+
+3. En el editor de animaciones del `AnimationPlayer` de `Mob` debemos asegurarnos que la animación "float" esté seleccionada y que esté habilitada la *Reproducción automática al cargar (el botón que está al lado del nombre de la animación).
+
+Como último toque, aleatoricemos la velocidad de la animación para los enemigos. Al final de la función `initialize()` en `mob.tscn` agregamos lo siguiente:
+
+```gdscript
+# aleatorizamos la velocidad de animación
+	$AnimationPlayer.speed_scale = random_speed / min_speed
+```
+
+Y ya, hemos terminado nuestro primer juego en 3D.
+
+
+
+
+

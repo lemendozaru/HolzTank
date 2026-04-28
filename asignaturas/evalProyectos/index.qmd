@@ -1,0 +1,5 @@
+# Prefacio {.unnumbered}
+
+Si bien esta materia tiene una fuerte carga teórica, su principal baza es la parte matemática, la cual incluye aspectos financieros y administrativos. A final de cuentas, si deseas controlar algo, primero debes medirlo, cuantificarlo. Y nadie tan bueno cuantificando como las propias Matemáticas.
+
+Sin embargo, la idea no es agobiarse con tremendas fórmulas algebraicas que contienen más letras que tu nombre. Tenemos tecnología, la cual deberíamos también ya estar dominando por completo. Por lo tanto, la carga teórica la reservamos para el día a día, mientras la cuantitativa se la dejamos a las computadoras.

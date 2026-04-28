@@ -1,0 +1,32 @@
+project:
+  type: book
+
+book:
+  title: "Introducción a Godot"
+  author: "Luis E. Mendoza"
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - conceptosclave.qmd
+    - primer2D.qmd
+    - primer3D.qmd
+    - primerMovil.qmd
+    - summary.qmd
+
+
+format:
+  html:
+    theme:
+      light: darkly
+      dark: flatly
+    toc-title: Contenido
+  pdf:
+    documentclass: scrreprt
+    toc-title: Contenido
+  epub:
+    toc: true
+    toc-title: Contenido
+    html-math-method: mathml
+
+
+

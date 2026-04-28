@@ -1,0 +1,28 @@
+project:
+  type: book
+
+book:
+  title: "Evaluación de Proyectos"
+  author: "Luis Mendoza"
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - introProyectos.qmd
+    - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme:
+        dark: darkly
+        light: flatly
+    toc-title: Contenido
+  pdf:
+    documentclass: scrreprt
+    toc-title: Contenido
+  epub:
+    toc: true
+    toc-title: Contenido
+    html-math-method: mathml
+

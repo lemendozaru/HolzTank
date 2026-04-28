@@ -1,0 +1,602 @@
+# Primer juego en 2D
+
+Crearemos nuestro primer mini-juego en dos dimensiones. Aunque sea simple, será un juego completo. Bajo la marcha, abordaremos el funcionamiento del motor, la estructura de un proyecto típico de Godot y la construcción de un juego en 2D.
+
+Cabe enfatizar que este curso no tendrá capturas de pantalla, ya que se desea lograr una familiaridad con el motor Godot mediante la práctica, no únicamente leyendo manuales.
+
+## Mecánicas del juego
+
+El personaje deberá moverse y esquivar enemigos que aparecen de manera aleatoria durante el mayor tiempo posible, el cual deberá mostrarse en la parte superior de la pantalla.
+
+Los *assets* se proveen en la plataforma del curso.
+
+## Configurando el proyecto
+
+Iniciamos Godot y creamos un nuevo proyecto. Para ello debemos darle al motor una ruta en la que se almacenará nuestro juego, dando clic al botón de *Examinar* y eligiéndola mediante el navegador de archivos de nuestro sistema operativo, damos clic en *Elegir carpeta actual*. Después, podemos darle nombre al proyecto escribiéndolo en la caja de texto que se encuentra al principio de la ventana.
+
+Para este nuestro primer juego en 2D, le daremos el nombre de *Primer2D* y dejamos todas las demás opciones tal como están.
+
+### Un vistazo al *viewport*
+
+Entraremos a la ventana principal de Godot, en la cual sobresale el *Viewport* en el centro y los distintos paneles a sus lados. Veamos primero el *Viewport*. Este muestra la vista previa de nuestro juego, aunque ahora se encuentra en la Vista 3D. La cambiaremos a la vista 2D mediante los botones que se encuentran justo encima. Ahí podremos notar varias líneas: una roja, una verde y un recuadro azul. La primera línea es el eje $x$ de nuestro mundo 2D, mientras que la línea roja es el eje $y$. Por otro lado, el recuadro azul representa la ventana de nuestro juego, o dicho de otra manera, es la cámara de nuestro mundo 2D.
+
+### Importando los assets
+
+Ahora nos enfocaremos en el *Sistema de Archivos*, llevando el cursor ahí y dando clic derecho crearemos una carpeta llamada `assets`. Enseguida abrimos el navegador de archivos del sistema operativo y arrastramos las carpetas `art` y `fonts` dentro de `assets`. También podemos realizarlo copiando y pegando dichos elementos mediante el navegador del sistema.
+
+### Configurando la vista del juego
+
+Este juego tendrá una vista vertical, preparándolo por si deseamos correrlo en un dispositivo móvil. Por ello, debemos configurar el tamaño de la ventana. Daremos clic en el menú *Proyecto -> Configuración del proyecto* para abrir la ventana de configuración del proyecto en sí. En la pestaña *General* buscaremos en la columna izquierda el apartado *Visualización -> Ventana*. Allí, en el conjunto *Tamaño*, modificaremos las opciones *Ancho del Viewport* y *Alto del Viewport* para dejarlos en `480` y `720`, respectivamente. Ahí mismo, pero en el conjunto *Estirar*, modificaremos la opción *Modo* para dejarla como `canvas_items` y debemos estar seguros que la opción *Aspecto* quede como `keep`.
+
+Podremos verificar que el recuadro azul de la vista 2D se ha actualizado a una configuración vertical.
+
+### Organizando el proyecto
+
+Crearemos unas cuantas carpetas para organizar los diferentes elementos del proyecto. La idea es tener una carpeta por cada tipo de archivo o elemento que necesitemos, por lo que a una le nombraremos `scenes` y otra será `scripts`. Así, toda escena la guardaremos en su respectiva carpeta y cuando debamos crear un archivo de código lo pondremos en su propio apartado.
+
+## Creando al jugador
+
+### Estructura de nodos
+
+Comenzaremos yendo al panel *Escena* y en su apartado *Crear Nodo Raíz* damos clic en *Otro Nodo*. Veremos que aparece una ventana con la lista de nodos disponibles. En la caja de texto superior podemos escribir el nombre del nodo deseado, que en este caso es `Area2D`. Lo seleccionamos y damos clic en *Crear*. Notaremos que Godot nos pone una advertencia sobre la ausencia de forma definida en el nodo. Esto es debido a que este nodo se utiliza para detectar colisiones, por ejemplo, y necesita saber su forma y tamaño. No nos preocuparemos por eso ahora, ya que primero debemos definir gráficamente cómo representaremos al jugador.
+
+Demos doble clic al nodo recién creado y cambiemos su nombre a `Player`, con mayúscula inicial. Esto es una convención para diferenciar y nombrar nodos en Godot (PascalCase), ya que las variables y funciones utilizan otra (snake_case) y las constantes la suya propia también (MAYÚSCULAS).
+
+Con el nodo `Player` aún seleccionado buscaremos el botón *Agrupar nodos seleccionados* que se encuentra justo arriba del *Viewport* y daremos clic, esto es para asegurarnos de seleccionar siempre al nodo principal aunque seleccionemos sus copias o hijos.
+
+Enseguida nos vamos al menú *Escena -> Guardar Escena* o usamos el atajo de teclado {{< kbd Ctrl-S >}} y en la carpeta `scenes` guardaremos la escena como `player.tscn`. En todo momento podemos verificar la estructura del proyecto mediante el *Sistema de Archivos*.
+
+### Animación del *sprite*
+
+Con el nodo `Player` seleccionado daremos clic en el signo *+* o con el atajo {{< kbd Ctrl-A >}} y agregaremos un nodo `AnimatedSprite2D`, el cual gestionará tanto la apariencia como las animaciones de nuestro personaje. Sin embargo, seguirá apareciendo una advertencia, ya que este nodo requiere precisamente los recursos gráficos que gestionará. Esos recursos deberán ir definidos en un apartado llamado `Sprite Frames`, el cual es la lista de animaciones incluidas.
+
+Con el nodo `AnimatedSprite2D` seleccionado, nos dirigimos al panel *Inspector* (se encuentra a la derecha de nuestra pantalla) y encontremos la propiedad `Sprite Frames` y demos clic en *[vacío] -> Nuevo -> SpriteFrames*. Damos clic en el `SpriteFrames` que se acaba de crear para abrir el panel *Fotogramas de Animación* en la parte inferior de la pantalla.
+
+A la izquierda hay una lista de animaciones (aunque solo haya una predeterminada). Seleccionamos la única animación presente y la renombramos como *caminar*. Ahora agregamos otra animación dando clic en el botón *Añadir animación* o con {{< kbd Ctrl-N >}} y la nombramos *arriba*.
+
+Con la animación *caminar* seleccionada, arrastramos los archivos `playerCaminar1.png` y `playerCaminar2.png` que se encuentran en la carpeta `assets/art` al área principal del panel de animaciones. Ahora repetimos para la animación *arriba* pero con los archivos `playerArriba1.png` y `playerArriba2.png`.
+
+Echando un vistazo al *viewport* podemos notar que el personaje es muy grande, por lo que lo escalaremos. Con el nodo `AnimatedSprite2D` seleccionado aún, nos dirigimos al panel *Inspector* y localizamos la sección *Node2D*, su apartado *Transform* y su opción *Scale* para dejarla en `0.5` tanto en $x$ como en $y$.
+
+Para finalizar agregaremos un nodo `CollisionShape2D` como hijo de `Player`. Después, en el inspector buscamos la sección *CollisionShape2D* y damos clic en *Shape -> [vacío] -> Nuevo -> CapsuleShape2D* y usando los manejadores de tamaño lo modificaremos hasta que logre cubrir el *sprite*. Esto se corresponde con la caja de colisión del personaje (lo que se conoce como *hitbox* en inglés). Ya no debería haber advertencias en el panel de *Escenas*.
+
+## Programando al jugador
+
+### Creando el script
+
+Con el nodo `Player` seleccionado damos clic en el botón *Añadir script* que se encuentra en el mismo panel de *Escenas*. Al aparecer el cuadro de diálogo solo debemos asegurarnos de modificar la ruta de guardado para que se almacene en la carpeta `scripts` y damos clic en *Crear*.
+
+### Variables
+
+Godot nos mandará en automático a su editor de código con una plantilla que ya contiene algunos elementos. Nos colocaremos justo debajo de la primera línea y declararemos las primeras variables: `speed` (para la velocidad del personaje en píxeles/segundo) y `screen_size` (para el tamaño de la pantalla del juego).
+
+```gdscript
+extends Area2D
+
+@export var speed = 400 # velocidad del jugador en pix/s
+var screen_size # tamaño de la ventana del juego
+
+```
+
+Notemos las palabra reservada `@export`, la cual permite llevar la variable al inspector, lo que permite modificar el valor de esta variable desde el mismo, sin tener que editar el script cada vez.
+
+### Función `_ready()`
+
+Continuemos con nuestro script. Tenemos una función llamada `_ready()`, la cual es llamada cuando entra a escena un nodo. Es buen momento para revisar el tamaño de la ventana del juego.
+
+```gdscript
+func _ready():
+	screen_size = get_viewport_rect().size
+```
+
+### Función `_process()`
+
+Ahora vayamos a la siguiente función presente en nuestra plantilla: `_process()`. Esta función se llama en cada frame, por lo que resulta adecuada para estar revisando cambios frecuentes en el juego. Por ejemplo, para el jugador necesitamos estar verificando continuamente las entradas de control, la dirección del movimiento y la animación adecuada a la acción ejecutada.
+
+#### Mapa de entradas
+
+Se refiere al mapeado de controles o cuáles teclas/botones se espera que el jugador presione para realizar las distintas acciones posibles en nuestro juego. Al ser un juego en 2D, podemos esperar tener cuatro entradas direccionales y que estén asignadas a las teclas direccionales de un teclado convencional.
+
+Para definir el mapeado, debemos ir al menú *Proyecto -> Configuración del proyecto* y luego a lapestaña *Mapa de entrada*. Veremos la barra de entrada que dice *Añadir nueva acción* y allí escribimos *izquierda* para luego dar clic en el botón *Añadir*. Veremos que aparece la acción `izquierda` que creamos, dentro del listado *Acción*. En el lado derecho veremos un botón *+*, el cual abrirá una ventana pequeña en modo espera: está esperando a que presionemos la entrada que asignaremos a la acción. Basta con presionar la tecla direccional izquierda de nuestro teclado. Debe aparecer el icono de una tecla acompañado por su nombre en inglés y la palabra (Físico). Damos clic en *Aceptar*.
+
+Repetimos para las cuatro direcciones. Damos clic en *Cerrar*.
+
+Es momento de probar las entradas mediante la función `Input.is_action_pressed()`.
+
+#### Dirección del movimiento
+
+Escribimos lo siguiente en la función:
+
+```gdscript
+func _process(delta: float):
+	var velocity = Vector2.ZERO # vector de movimiento del jugador
+	if Input.is_action_pressed("derecha"):
+		velocity.x += 1
+	if Input.is_action_pressed("izquierda"):
+		velocity.x -= 1
+	if Input.is_action_pressed("abajo"):
+		velocity.y += 1
+	if Input.is_action_pressed("arriba"):
+		velocity.y -= 1
+
+	if velocity.length() > 0:
+		velocity = velocity.normalized() * speed
+		$AnimatedSprite2D.play()
+	else:
+		$AnimatedSprite2D.stop()
+```
+
+Definimos el vector de movimiento del jugador como nulo o cero ya que no debería poder moverse justo al inicio. Luego, sumamos o restamos a los diferentes ejes, dependiendo de la entrada detectada. Tomemos en cuenta que sumar y restar en $x$ significa moverse a la derecha y a la izquierda, respectivamente; mientras que sumar y restar en $y$ implica bajar y subir, respectivamente.
+
+Otro punto a considerar es que `velocity` debe normalizarse (concepto de cálculo vectorial), es decir, hacer que su valor máximo sea 1, ya que de lo contrario, presionar dos teclas hará que su velocidad se duplique, volviendo más rápido el movimiento en diagonal. En las últimas líneas agregamos esa normalización y además ponemos las condiciones para mostrar la animación correspondiente.
+
+Por último, debemos definir la posición del jugador con base en su velocidad y evitar que salga de la pantalla. Esto se consigue agregando estas líneas al final de la función `_process()` pero fuera del `else`
+
+```gdscript
+position += velocity * delta
+position = position.clamp(Vector2.ZERO, screen_size) # clamp evita salir de pantalla
+```
+
+::: {.callout-note}
+## Nota
+
+El parámetro *delta* en la función `_process()` se refiere al tiempo que le tomó al cuadro de animación o *frame* anterior para completarse. Usando este valor aseguramos que el movimiento sera consistente incluso si la tasa de cuadros por segundo *frame-rate* cambia.
+
+:::
+
+Guardamos la escena y presionamos el botón *Ejecutar Escena Actual* (también podemos presionar {{< kbd F6 >}} o {{< kbd Fn-F6 >}} en ciertas laptops) para visualizar nuestra escena actual. El personaje debería poder moverse de acuerdo a la tecla que estemos presionando y no salir de la pantalla.
+
+### Mostrar la animación adecuada
+
+Tenemos solo dos animaciones: *caminar* y *arriba*. Esto no es malo en sí, ya que podemos decirle a Godot que refleje las animaciones disponibles y así tendremos todo cubierto. Esto se consigue con las funciones `flip_h` y `flip_v` para reflejar horizontal y verticalmente. Agregamos al final de la función `_process()` lo siguiente
+
+```gdscript
+if velocity.x != 0:
+	$AnimatedSprite2D.animation = "caminar"
+	$AnimatedSprite2D.flip_v = false
+	$AnimatedSprite2D.flip_h = velocity.x < 0
+elif velocity.y != 0:
+	$AnimatedSprite2D.animation = "arriba"
+	$AnimatedSprite2D.flip_v = velocity.y > 0
+```
+
+### Preparando las colisiones
+
+Deseamos que nuestro juego nos avise cuando el personaje haya chocado con algún enemigo. Esto se consigue mediante señales, así que nos dirigimos al script y justo debajo de la primera línea escribimos:
+
+```gdscript
+signal hit
+```
+
+Con el nodo `Player` seleccionado, nos vamos al panel *Señales* y notaremos que la que hemos creado (`hit()`) se encuentra ahí. Sin embargo, nos interesa seleccionar la señal `body_entered(body:Node2D)`. Al hacerlo aparecerá el botón *Conectar...*, si lo presionamos aparece la ventana *Conectar señal*. Damos clic en el botón *Conectar* sin modificar nada más. Godot creará una función dentro de nuestro script.
+
+La función en cuestión tendrá la forma `func _on_body_entered():`, la cual completaremos escribiendo:
+
+```gdscript
+func _on_body_entered(body: Node2D):
+	hide() # el nodo Player desaparece al ser golpeado
+	hit.emit() # se emite la señal de ser golpeado
+	# Debe apagarse la emisión de señal para que no se repita
+	$CollisionShape2D.set_deferred("disabled", true)
+```
+
+Hecho esto, agregamos otro bloque de código que permita reiniciar el juego tras haber perdido:
+
+```gdscript
+func start(pos):
+	position = pos
+	show()
+	$CollisionShape2D.disabled = false
+```
+
+### Código del jugador
+
+El script final del jugador queda como sigue:
+
+```gdscript
+extends Area2D
+
+signal hit
+
+@export var speed = 400
+var screen_size
+
+func _ready() -> void:
+	screen_size = get_viewport_rect().size
+	hide()
+
+func _process(delta):
+	var velocity = Vector2.ZERO # vector de movimiento del jugador
+	if Input.is_action_pressed("derecha"):
+		velocity.x += 1
+	if Input.is_action_pressed("izquierda"):
+		velocity.x -= 1
+	if Input.is_action_pressed("abajo"):
+		velocity.y += 1
+	if Input.is_action_pressed("arriba"):
+		velocity.y -= 1
+
+	if velocity.length() > 0:
+		velocity = velocity.normalized() * speed
+		$AnimatedSprite2D.play()
+	else:
+		$AnimatedSprite2D.stop()
+
+	position += velocity * delta
+	position = position.clamp(Vector2.ZERO, screen_size) # clamp evita salir de pantalla
+
+	if velocity.x != 0:
+		$AnimatedSprite2D.animation = "caminar"
+		$AnimatedSprite2D.flip_v = false
+		$AnimatedSprite2D.flip_h = velocity.x < 0
+	elif velocity.y != 0:
+		$AnimatedSprite2D.animation = "arriba"
+		$AnimatedSprite2D.flip_v = velocity.y > 0
+
+func _on_body_entered(body: Node2D):
+	hide() # Player desaparece al ser golpeado
+	hit.emit() # se emite la señal de ser golpeado
+	# Debe apagarse la emisión de señal para que no se repita
+	$CollisionShape2D.set_deferred("disabled", true)
+
+func start(pos):
+	position = pos
+	show()
+	$CollisionShape2D.disabled = false
+```
+
+## Creando al enemigo
+
+Los enemigos aparecerán al azar en las orillas de la pantalla y se moverán en línea recta con dirección aleatoria. Podemos notar que será un comportamiento algo sencillo.
+
+Para su creación utilizaremos una escena que "copiaremos" o *instanciaremos* para tener muchos enemigos en pantalla con el mismo comportamiento (pero no la misma posición, claro está).
+
+### Configurando al enemigo
+
+Crearemos una escena nueva y agregaremos un nodo `RigidBody2D` como nodo raíz. Además le cambiaremos el nombre para dejarlo como `Mob`. Luego agregaremos tres nodos hijos, los cuales serán: un `AnimatedSprite2D`, un `CollisionShape2D` y un `VisibleOnScreenNotifier2D`.
+
+Nos aseguramos de agrupar los nodos en torno al nodo raíz (presionando {{< kbd Ctrl+G>}}) o dando clic en el botón correspondiente. Con `Mob` seleccionado, nos vamos al Inspector y cambiamos la propiedad `Gravity Scale` que se encuentra en la sección *RigidBody2D* a `0`. Con esto evitaremos que el enemigo caiga al suelo. Luego, en la sección *CollisionObject2D*, apartado *Collision*, desmarcaremos la capa 1 del sub-apartado *Mask*, para así evitar que los enemigos choquen entre sí.
+
+### Animando al enemigo
+
+Mismo proceso que con el jugador:
+
+- Seleccionar el nodo `AnimatedSprite2D`.
+- Escalar el nodo a valores de `0.75` en ambas dimensiones.
+- Crear un nuevo *Sprite Frame* desde la sección *AnimatedSprite2D* en el Inspector.
+- Renombrar la animación por defecto a `volar`.
+- Asignar los sprites correspondientes desde la carpeta `assets`.
+- Cambiar la velocidad de animación a `3`.
+- Crear las animaciones `nadar` y `caminar`.
+- Repetir los mismos pasos que en `volar`.
+- Con el nodo `CollisionShape2D` seleccionado, agregamos una nueva *CapsuleShape2D*, solo que debemos rotarla 90° para alinearla con los sprites. Esto se logra cambiando la propiedad *Rotation* que está en el apartado *Transform* de la sección *Node2D* en el inspector.
+
+Podemos guardar la escena si es que no lo hemos hecho ya (se sugiere que quede como *mob.tscn*).
+
+### Programando al enemigo
+
+Agreguemos un script al nodo `Mob`, sin editar nada, solo la ruta de guardado. Nos vamos directamente a la función `_ready()`, en la cual reproduciremos una de las tres animaciones que agregamos, pero de manera aleatoria.
+
+```gdscript
+func _ready():
+    var mob_types = Array($AnimatedSprite2D.sprite_frames.get_animation_names())
+	$AnimatedSprite2D.animation = mob_types.pick_random()
+	$AnimatedSprite2D.play()
+```
+
+En la primera línea obtenemos los nombres de las animaciones que ya creamos y los asignamos a un arreglo. En la segunda elegimos al azar una de estas animaciones desde el arreglo y en la última la reproduciremos.
+
+Por último, debemos pensar en que al aparecer enemigos aleatoriamente, debemos gestionar qué debe pasar cuando salgan de pantalla. Lo normal y eficiente es eliminarlos. Lo haremos seleccionando el nodo restante (VisibleOnScreenNotifier2D), luego yendo hacia el panel de *Señales* y conectar `screen_exited()` a `Mob`. Dentro de esta señal, en su código escribimos la función `queue_free()`, que precisamente elimina el nodo al final del cuadro.
+
+### Código del enemigo
+
+El script final que dicta cómo se comporta el enemigo queda así:
+
+```gdscript
+extends RigidBody2D
+
+func _ready():
+	var mob_types = Array($AnimatedSprite2D.sprite_frames.get_animation_names())
+	$AnimatedSprite2D.animation = mob_types.pick_random()
+	$AnimatedSprite2D.play()
+
+func _on_visible_on_screen_notifier_2d_screen_exited() -> void:
+	queue_free()
+```
+
+## Escena principal
+
+Creamos una escena nueva a la que agregaremos un nodo `Node` que renombraremos como `Main`. Al ser un nodo que manejará la lógica del juego, no es necesario que tenga propiedades 2D, por eso elegimos uno más "general". Con `Main` seleccionado, damos clic en el botón *Instanciar escena hija*, el cual tiene forma de cadena y elegimos la escena `player.tscn`.
+
+### Configurando la escena
+
+Enseguida agregamos como nodos hijos de `Main` tres nodos `Timer` y uno `Marker2D`. Los renombraremos como `MobTimer` (este nos permite elegir la frecuencia de aparición de los enemigos), `ScoreTimer` (este se incrementará conforme pasen los segundos, contando como el puntaje), `StartTimer` (debemos darle al jugador tiempo de prepararse para la próxima partida) y `StartPosition` (que define dónde aparecerá el jugador al inicio), respectivamente.
+
+Ahora modificaremos la propiedad *Wait Time* de cada *timer* o contador a `0.5`, `1` y `2`, respectivamente. Nos quedaremos en el tercer contador un momento, ya que también debemos cambiar su propiedad *One Shot* a *Activado*.
+
+En cuanto al nodo `StartPosition`, cambiamos su propiedad *Position* (está dentro del apartado *Transform*) a `(240,450)`.
+
+### Agregando los enemigos
+
+Seleccionamos `Main` y agregamos un nodo hijo `Path2D` al que llamaremos `MobPath`. Seleccionamos este nuevo nodo y veremos que se agregan más botones encima del viewport. Debemos dar clic en los botones *Usar ajuste inteligente* y *Usar ajuste de cuadrícula* para facilitar lo que haremos a continuación. Nos vamos a los botones que aparecen al dar clic en el nodo `MobPath` y daremos clic en *Agregar punto*, para luego delimitar la pantalla del juego con un clic en cada una de las esquinas, comenzando por el superior izquierdo, luego el superior derecho, enseguida el inferior derecho y por último, el inferior izquierdo. Después damos clic en el botón *Cerrar la curva* y listo, hemos delimitado la pantalla.
+
+Agregamos un nodo hijo de `MobPath`, el cual será del tipo `PathFollow2D` y le llamaremos `MobSpawnLocation`. Este último nodo  estará girando automáticamente al moverse, por lo que resulta ideal para nuestros enemigos.
+
+### Programando la escena principal
+
+Agregamos un script a `Main` y ahí declararemos una variable que nos permita elegir la escena que vamos a instanciar:
+
+```gdscript
+extends Node
+
+@export var mob_scene: PackedScene
+var score
+```
+
+Con esto hecho, debería aparecer la propiedad *Mob Scene* en el inspector. Daremos clic donde dice [vacío] y luego en *Cargar*. Seleccionamos la escena `mob.tscn` para asignarla.
+
+Lo siguiente es seleccionar la instancia `Player` en el panel Escenas y luego abrir el panel Señales. Debemos dar doble clic en la señal `hit()` y ahí, en el cuadro de conexión, escribiremos `game_over` como *Método receptor*, para así obligar a que la señal `hit()` emitida por `Player` sea gestionada por el script `Main`. Daremos clic en *Conectar* sin editar nada más.
+
+Esto creará una función llamada `game_over()`, la cual completaremos con las siguientes líneas:
+
+```gdscript
+func game_over():
+	$ScoreTimer.stop()
+	$MobTimer.stop()
+```
+
+También agregaremos una nueva función llamada `new_game()` con el siguiente código:
+
+```gdscript
+func new_game():
+	score = 0
+	$Player.start($StartPosition.position)
+	$StartTimer.start()
+```
+
+Ahora toca conectar los temporizadores con el script principal. Para ello seleccionamos cada *timer* en el panel Escena y luego damos doble clic en la señal `timeout()` de su respectivo panel Señales, dejando las opciones del cuadro de conexiones por defecto dando clic en el botón *Conectar*.
+
+Una vez hecho esto, deberíamos poder ver que cada *timer* tiene una conexión a señal para su respectivo `timeout()`. Entonces toca definir cómo operará cada temporizador, lo cual haremos con las siguientes líneas:
+
+```gdscript
+func _on_score_timer_timeout():
+	score += 1
+
+func _on_start_timer_timeout():
+	$MobTimer.start()
+	$ScoreTimer.start()
+```
+
+El `MobTimer` tendrá un comportamiento diferente, ya que instanciaremos al `Mob`, eligiendo una posición de inicio aleatoria a lo largo de `Path2D` y luego poniéndolo en movimiento. El nodo `PathFollow2D` girará de manera automática conforme siga la ruta, por lo que lo usaremos para escoger la dirección y posición de cada enemigo. Cambiaremos la velocidad por cada instancia del enemigo, para dar mayor variedad a nuestro juego. Añadiremos la nueva instancia a la escena usando `add_child()`.
+
+```gdscript
+func _on_mob_timer_timeout():
+	# Crea una nueva instancia de la escena "Mob"
+	var mob = mob_scene.instantiate()
+
+	# Elige una ubicación aleatoria sobre "Path2D"
+	var mob_spawn_location = $MobPath/MobSpawnLocation
+	mob_spawn_location.progress_ratio = randf()
+
+	# Configura la posición del enemigo a la aleatorizada
+	mob.position = mob_spawn_location.position
+
+	# Configura la dirección perpendicular del enemigo a la dirección de la ruta
+	var direction = mob_spawn_location.rotation + PI / 2
+
+	# Agrega aleatoriedad a la dirección
+	direction += randf_range(-PI / 4, PI / 4)
+	mob.rotation = direction
+
+	# Elige un vector velocidad para el enemigo
+	var velocity = Vector2(randf_range(150.0, 250.0), 0.0)
+	mob.linear_velocity = velocity.rotated(direction)
+
+	# Hace aparecer al enemigo agregándolo a la escena principal
+	add_child(mob)
+```
+
+::: {.callout-note}
+## Nota
+
+Usamos `PI` porque Godot utiliza radianes y no grados en sus funciones. `PI` representa media vuelta en radianes. Si deseamos utilizar grados, debemos convertirlos mediante las funciones `deg_to_rad()` y `rad_to_deg()` para intercambiarlos.
+
+:::
+
+### Probando la escena
+
+Agreguemos esta línea a la función `_ready()`:
+
+```gdscript
+func _ready():
+	new_game()
+```
+
+Ahora es turno de definir nuestra escena principal. Esto se consigue dando clic derecho a la pestaña de la escena deseada, que en este caso es `main.tscn`, y eligiendo la opción *Establecer como escena principal*.
+
+Basta con dar clic en el botón de *Reproducir proyecto* (el típico icono de *Play* que se encuentra arriba del inspector) o presionando {{<kbd F5>}} y ver la ventana de nuestro juego. Si ya estamos conformes con el funcionamiento, cambiamos la línea `new_game()` por `pass` en la función `_ready()` para continuar con la interfaz de usuario.
+
+## Interfaz de usuario
+
+Démosle a nuestro juego los toques finales: agreguemos el puntaje en pantalla, un botón de inicio/reinicio y un mensaje de *Game Over*.
+
+### Configurando el HUD
+
+Crearemos una nueva escena y le agregaremos un nodo `CanvasLayer` como nodo raíz y le cambiamos el nombre a `HUD`. Este nodo permite colocar elementos en una capa superpuesta a todos los demás elementos, por lo que nunca quedarán ocultos, sin importar lo que pase en pantalla.
+
+Con `HUD` seleccionado, agregamos como nodos hijos los siguientes elementos:
+
+- `Label`, renombrado a `ScoreLabel`
+- `Label`, renombrado a `Message`
+- `Button`, renombrado a `StartButton`
+- `Timer`, renombrado a `MessageTimer`
+
+Seleccionamos `ScoreLabel` y escribimos el número cero en el campo `Text` del inspector, bajamos un poco y veremos las propiedades *Vertical Alignment* y *Horizontal Alignment*: las cambiamos a `Center` ambas. La fuente que viene por defecto es bastante mala, por lo que cargaremos la que viene incluida en los assets del curso. Para ello, bajamos a la sección *Control* y localizamos el apartado *Theme Overrides*. Ahí en la propiedad *Fonts -> FontFile* damos clic en la pequeña flecha que apunta hacia abajo y enseguida seleccionamos *Cargar*. Seleccionamos el archivo `Xolonium-Regular.ttf`. Aún queda cambiar su tamaño, por lo que daremos clic en la propiedad *Font Size* que se encuentra justo debajo y lo editamos para dejarlo en 64 píxeles.
+
+Repetiremos estos pasos para la otra etiqueta y el botón.
+
+### Posicionando los elementos del HUD
+
+El siguiente paso es colocar los diferentes elementos en la pantalla, ya que en este momento se traslapan entre sí. Seleccionamos `ScoreLabel` y veremos que aparecen tres botones nuevos encima del viewport. Ubiquemos el primero, el cual nos permite utilizar anclajes preconfigurados y lo desplegamos. Escogemos el anclaje *Centro Superior* para colocar la etiqueta centrada y arriba en la pantalla.
+
+Para la etiqueta `Message` pondremos el texto *¡Esquiva todo!*, ajustamos la alineación a Centro en vertical y horizontal; cambiamos su propiedad *AutoWrap Mode* a *Word* para que pueda expresarse en más de una línea si fuera necesario; dentro de *Control - Layout - Transform* cambiamos la propiedad *Size X* a 480 para que ocupe la pantalla por completo horizontalmente; por último, dejamos el ancla en *Centro*.
+
+Para `StartButton` pondremos el texto *¡Inicia!* y en *Control - Layout - Transform* cambiamos *Size X* a `200`, *Size Y* a `100` (para darle mayor espacio entre el texto y el borde) y *Position Y* a `580`. Por último, el anclaje lo dejamos en *Centro Inferior*.
+
+En el `MessageTimer` ajustamos *Wait Time* a 2 y activamos su *One Shot*.
+
+### Programando el HUD
+
+Agregamos un script al nodo `HUD` y escribimos:
+
+```gdscript
+extends CanvasLayer
+
+# Notifica al nodo `Main`que el botón ha sido presionado
+signal start_game
+```
+
+Quiza queramos mostrar un mensaje temporal para preparar al jugador, por lo que agregamos el siguiente código:
+
+```gdscript
+func show_message(text):
+	$Message.text = text
+	$Message.show()
+	$MessageTimer.start()
+```
+
+También debemos decirle al motor qué hacer cuando el jugador pierda. Con el siguiente código mostraremos el mensaje de *¡Has perdido!* durante dos segundos, luego volverá a la pantalla de título y después, tras una pausa contada por un timer "abstracto", mostrará el botón de inicio.
+
+```gdscript
+func show_game_over():
+	show_message("¡Has perdido!")
+	# Espera a que MessageTimer termine de contar
+	await $MessageTimer.timeout
+
+	$Message.text = "¡Esquiva todo!"
+	$Message.show()
+	# Crea un contador de un solo tiro y le espera a que termine
+	await get_tree().create_timer(1.0).timeout
+	$StartButton.show()
+```
+
+::: {.callout-note}
+
+## Nota
+
+Cuando necesitemos hacer una pausa por un breve tiempo, una alternativa al uso de un nodo temporizador es usar la función `create_timer()` del árbol de escena. Esto puede ser muy útil para retrasar, como en el código anterior, donde queremos esperar un poco de tiempo antes de mostrar el botón "¡Inicia!".
+
+:::
+
+Ahora agregaremos lo siguiente para actualizar el puntaje:
+
+```gdscript
+func update_score(score):
+	$ScoreLabel.text = str(score)
+```
+
+Seleccionamos `StartButton` y conectamos la señal `pressed()` a `HUD`. Luego seleccionamos `MessageTimer` y conectamos su señal `timeout()` también a `HUD` y completamos las funciones resultantes tal como sigue:
+
+```gdscript
+func _on_start_button_pressed():
+	$StartButton.hide()
+	start_game.emit()
+
+func _on_message_timer_timeout():
+	$Message.hide()
+```
+
+### Conectando el HUD a la escena principal
+
+Regresaremos a la escena principal, seleccionando su pestaña en el viewport. Instanciaremos la escena `hud.tscn` y abrimos `main.gd` en el motor. Lo siguiente es seleccionar la escena recién instanciada (`HUD`) e irnos a Señales, donde daremos doble clic en la señal `start_game()`. En el nuevo cuadro que aparece, nos aseguramos de tener seleccionado `Main` y damos clic en el botón *Seleccionar* del apartado *Método receptor* para enseguida escoger `new_game()`. Damos clic en *Aceptar* y luego en *Conectar*. Debe aparecer el icono de flecha verde junto a la función `new_game()` en el script.
+
+Ahora toca escribir el siguiente código en la misma función:
+
+```gdscript
+$HUD.update_score(score)
+$HUD.show_message("¿Listo?")
+```
+
+Nos vamos a la función `game_over()` y agregamos lo siguiente:
+
+```gdscript
+$HUD.show_game_over()
+```
+
+Para finalizar, debemos sincronizar la interfaz con el puntaje, para lo cual nos dirigimos ahora a la función `_on_score_timer_timeout()` y agregamos:
+
+```gdscript
+$HUD.update_score(score)
+```
+
+### Removiendo los enemigos
+
+Podemos notar que al perder, los enemigos siguen en pantalla y permanecerán incluso si comenzamos un juego nuevo. Podemos quitar este comportamiento mediante los *grupos*. Nos vamos a la escena `mob` en su respectiva pestaña, seleccionamos el nodo `Mob` y nos dirigimos al panel *Grupos* (está a la derecha de *Señales*) y damos clic en el botón *+* para crear un grupo nuevo. Le pondremos "mobs" como nombre y damos clic en *Aceptar*. Ahora todos los enemigos estarán agrupados.
+
+Es momento de regresar a `main.gd` y escribir en la función `new_game()` lo siguiente:
+
+```gdscript
+get_tree().call_group("mobs", "queue_free")
+```
+
+Recordemos que `queue_free()` elimina lo que está referenciado en ella, así que esto que acabamos de escribir la llama y la aplica al grupo "mobs", mediante `call_group()`.
+
+Prácticamente ya terminamos el juego, solo nos resta agregar efectos de sonido y mejoras en la calidad de vida, como atajos de teclado.
+
+## Toques finales
+
+### Cambiando el fondo
+
+Cambiemos el color de fondo del juego mediante un nodo `ColorRect`, el cual agregamos como hijo de `Main`. Debemos asegurarnos de arrastrar este nodo hacia la parte superior del árbol de nodos, de manera que quede justo debajo de `Main`, con el fin de que quede por debajo de todo en pantalla. Su única propiedad es el color, así que elegimos uno que nos agrade. También podemos utilizar una imagen, pero en ese caso utilizaremos el nodo `TextureRect`. Por último, modificamos el anclaje de este nodo a *Completo* para que así cubra la pantalla.
+
+### Agregando sonido
+
+No debemos concibir un juego sin música o efectos de sonido. Así que agregamos dos nodos `AudioStreamPlayer` como hijos de `Main` y les renombramos como `Music` y `Death`, respectivamente. Para el primero seleccionamos el archivo `House in a Forest Loop.ogg` en su propiedad *Stream -> Nuevo -> Cargar*. Hecho esto, damos clic derecho en el archivo (aún dentro del inspector) y seleccionamos *Hacer único* y enseguida damos clic izquierdo y activamos la propiedad *Loop*. Repetimos lo mismo para el segundo, pero ahora utilizaremos `gameover.wav` y no lo haremos único. Los archivos de audio se encuentran en la carpeta `assets/art` que importamos al inicio.
+
+Para reproducir la música debemos escribir su activación en el código, yendo a la función `new_game()` y escribiendo al final:
+
+```gdscript
+$Music.play()
+```
+
+Para detener la música y reproducir el sonido de muerte, nos vamos a `game_over()` y agregamos:
+
+```gdscript
+$Music.stop()
+$DeathSound.play()
+```
+
+### Atajos de teclado
+
+Ya que nuestro juego se controla con un teclado, sería bastante conveniente iniciarlo con una tecla. Podemos agregar esto con la propiedad *Shortcut* del nodo `StartButton`.
+
+Vamos a la configuración del proyecto y en la pestaña del Mapa de entradas agregaremos una acción que llamaremos `start_game` y le asignaremos la tecla {{< kbd Enter >}}. En la escena `HUD` seleccionamos `StartButton` y localizamos su propiedad *Shortcut* en el inspector. Damos clic en donde pone *Vacío* y creamos un nuevo recurso `Shortcut`. Le damos clic una vez, al aparecer las palabras *Array[InputEvent]* volvemos a dar clic en donde pone *Añadir elemento*. Clic de nuevo y en *InputEventAction*. Aparecerá otro apartado, pues en donde se lee *Action* damos clic y seleccionamos `start_game`. Probemos y ya debería iniciar el juego, tanto por presionar {{< kbd Enter >}} como por dar clic en el botón de inicio.
+
+### Soporte para control o mando
+
+Es buen momento para agregar el soporte para control en nuestro pequeño juego. Conectamos o emparejamos uno y nos vamos al Mapa de entradas en la configuración del proyecto y en cada una de las acciones ya creadas le damos clic al botón *+* y presionamos los botones del mando que desamos asignar (las cuatro direcciones y el botón *start*, claro).
+
+Probemos, nuestro juego ya debería funcionar con el control.
+
+## Exportando el juego finalizado
+
+Podemos compartir el juego simplemente comprimiendo la carpeta del proyecto y asegurarnos de que quien quiera probarlo tenga Godot instalado. Pero si eso no es lo que deseamos, debemos exportar el juego para crear un ejecutable o binario.
+
+Los binarios de nuestro juego se crean mediante el menú *Proyecto -> Exportar*. Ahí veremos que de entrada estará vacío, ya que no tenemos ningún ajuste predefinido o *presets*. Para agregar uno, basta dar clic en el botón correspondiente y seleccionar la plataforma para la que queremos crear el binario. A modo de ejemplo, probemos el de *Windows Desktop* o el de *Linux*. A pesar de seleccionarlo, se nos dirá que aún falta una plantilla de exportación, lo cual impedirá generar el ejecutable. Damos clic en el enlace *Administrar plantillas de exportación* y después en *Descargar e instalar*. Esto descargará archivos que pueden llegar a ser bastante pesados (en el caso de escritorio, es de mas de 1 GB).
+
+Con las plantillas y presets descargados y listos, podemos ya exportar nuestro proyecto. En la *Ruta de exportación* deberíamos escoger una diferente a la de nuestro proyecto, ya que si tenemos control de versiones, no resulta buena idea publicar el binario en la misma carpeta, ya que este debería publicarse como *Releases* en Github, por ejemplo. Se sugiere quitar la *Envoltura de consola de exportación* de la pestaña *Opciones* y esscoger *Exportar escenas seleccionadas* (se seleccionan todas con sus dependencias, naturalmente) de la pestaña *Recursos*. Todo lo demás puede dejarse tal como está. El proceso de exportación debe ser breve y generar los ejecutables deseados en la ruta especificada. Probemos que funcionen y si es así, ¡listo! ya podemos publicar nuestro juego.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

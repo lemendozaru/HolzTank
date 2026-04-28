@@ -1,0 +1,5 @@
+# Inicio {.unnumbered}
+
+Este es un curso básico sobre Godot y el desarrollo de videojuegos. Estaremos abordando tres proyectos: un minijuego en dos dimensiones, otro en tres y uno final que se enfoca en mecánicas aptas para dispositivos móviles.
+
+Para aprender más sobre Godot, [godotengine.org](https://godotengine.org/es/).

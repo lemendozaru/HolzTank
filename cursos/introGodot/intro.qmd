@@ -1,0 +1,3 @@
+# Introducción
+
+Este libro es producto de una recopilación de información proveniente tanto del propio sitio de [Godot](https://godotengine.org/es/), traducida libremente; como de la poca experiencia propia en el desarrollo de videojuegos. Algunos conceptos podrían estar mejor abordados, pero se desea mantener un enfoque más "práctico", por lo que se espera que muchas definiciones se dominen "a la marcha".
