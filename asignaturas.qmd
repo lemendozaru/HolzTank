@@ -9,7 +9,9 @@ Aquí enlisto las asignaturas y los materiales que vaya generando para las misma
 ::: {.grid}
 
 ::: {.g-col-4 .card style="padding: 1rem;"}
+
 ## Sistemas Embebidos
+
 El Internet de las cosas.
 
 - Carrera: ITI
@@ -17,6 +19,19 @@ El Internet de las cosas.
 - Herramientas: Arduino IDE, Kate, Python, Rust o C++.
 
 [Entrar al curso →](asignaturas/sistemasEmbebidos/)
+:::
+
+::: {.g-col-4 .card style="padding: 1rem;"}
+
+## Evaluación de Proyectos
+
+Lo redituable (o no) de un negocio.
+
+- Carrera: LNI
+- Cuatrimestre: Noveno
+- Herramientas: Hoja de cálculo y R.
+
+[Entrar al curso →](asignaturas/evalProyectos/)
 :::
 
 :::

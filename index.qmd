@@ -1,7 +1,51 @@
 ---
-title: "HolzTank"
+title: "Contenido"
 ---
 
-Hola, me llamo Luis Mendoza. Este es mi sitio personal.
+Sitio personal para alojar cursos, material y contenido de mis asignaturas e intereses. Es decir, además de cargar el material en la plataforma de la Universidad, también lo estaré subiendo en este sitio. La única razón es tener mayor control (y respaldo, que también) sobre los recursos. Así podré acceder a ellos esté donde esté y cómo esté.
 
-Aquí estaré subiendo el material de mis cursos, algunas publicaciones referentes a los mismos y posteos medio aleatorios que se vayan dando.
+En cuanto al material que está listado como *Cursos*, me refiero a contenido que no necesariamente pertenece a una materia en sí o que va sobre desarrollo de videojuegos, que es un taller "externo" que estoy manejando. Lo había estado compartiendo como un libro PDF gestionado a través de un repositorio de Github, pero creo que es mejor mantenerlo en línea y accesible para todos. Claro, la descarga del PDF seguirá estando disponible de manera directa, por si acaso.
+
+Y por último, también aquí estaré dejando material que no encaja en ninguno de los lugares anteriores. Esto es, escritos sobre videojuegos en el sentido lúdico, apuntes sobre Historia, artículos sobre software libre, código CNC o fotos de trabajos propios y alguna que otra cosa totalmente fuera de tema que vaya surgiendo.
+
+¡Ah! Holztank no significa nada en realidad, o probablemente sí. Solo uní dos palabras: Holz, que es "madera" en alemán y Tank, "tanque" en inglés. Es para cuando me entra la curiosidad de la carpintereada.
+
+::: {.grid}
+
+::: {.g-col-4 .card style="padding: 1rem;"}
+
+## Asignaturas
+
+Material y contenido para las materias de ITI, LNI, TID, IDIA y CIA.
+
+- Nivel: Todos los cuatrimestres.
+- Herramientas: Las necesarias.
+
+[Entrar al material →](asignaturas.qmd)
+:::
+
+::: {.g-col-4 .card style="padding: 1rem;"}
+
+## Cursos
+
+Material y contenido extracurricular.
+
+- Nivel: Cualquiera.
+- Herramientas: Las necesarias.
+
+[Entrar a los cursos →](cursos.qmd)
+:::
+
+::: {.g-col-4 .card style="padding: 1rem;"}
+
+## Blog
+
+Fuera de tópico, simplemente cosas.
+
+- Nivel: Cualquiera.
+- Herramientas: Algunas.
+
+[Entrar al blog →](blog/index.qmd)
+:::
+
+:::
