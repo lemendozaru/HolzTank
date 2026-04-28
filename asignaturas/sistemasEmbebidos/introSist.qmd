@@ -1,0 +1,3 @@
+# Introducción a los sistemas embebidos
+
+Antes de siquiera definir qué son los sistemas embebidos, necesito establecer la diferencia entre un microcontrolador y un microprocesador.

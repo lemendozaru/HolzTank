@@ -1,5 +1,12 @@
 # Prefacio {.unnumbered}
 
-This is a Quarto book.
+Este curso resulta ser bastante entretenido, si se toma con calma. El contenido es generoso en el papel, pero en la práctica se antoja un poco corto. Es muy importante comenzar trabajando con algunas herramientas virtuales, pero no quedarse con la idea de que son las definitivas o que representan fielmente la realidad de estar trabajando con componentes electrónicos.
 
-To learn more about Quarto books visit <https://quarto.org/docs/books>.
+Bien, paso a enlistar los elementos que se estarán utilizando en este curso:
+
+- Un simulador para las primeras semanas. Puede ser TinkerCAD, Wokwi o SimulIDE.
+- Luego, un entorno de desarrollo para la placa y el lenguaje elegidos. Puede ser *Arduino IDE* si eligen un arduino o una esp32 para trabajar con `C++`.
+- Si se deciden por una Raspberry Pi, el entorno puede ser cualquiera que funcione con `Python`, incluso *VSCode*, aunque sea tan pesado.
+- Si se deciden por una esp32 pero no con `C++`, *Arduino Labs for MicroPython* funciona muy bien.
+- Si se van por el lado más innovador o suicida, `Rust` está al alcance.
+- Ya si odian al mundo, esp32 con lenguaje ensamblador es lo adecuado.

@@ -1,5 +1,3 @@
-# Introduction
+# Introducción
 
-This is a book created from markdown and executable code.
-
-See @knuth84 for additional discussion of literate programming.
+Se supone que aquí debo poner un resumen de todo lo que incluirá el curso. Pero para eso, te invito a que leas el manual de la asignatura. Está en el curso, en Moodle. Y es gratis.
