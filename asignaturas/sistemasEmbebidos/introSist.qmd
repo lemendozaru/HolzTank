@@ -1,3 +1,32 @@
 # Introducción a los sistemas embebidos
 
-Antes de siquiera definir qué son los sistemas embebidos, necesito establecer la diferencia entre un microcontrolador y un microprocesador.
+Antes de siquiera definir qué son los sistemas embebidos, necesitamos establecer las diferencias entre un microcontrolador (MCU) y un microprocesador (MPU).
+
+## MCUs
+
+Un MCU contiene todo lo necesario para funcionar en una sola pieza de hardware. Es decir, es una computadora en un solo chip (System on a Chip o SoC) que contiene una CPU, una memoria volátil operativa (RAM), otra de solo lectura, programable y borrable eléctricamente (Electrically Erase PROgrammable Memory o EEPROM) y periféricos como conversores, protocolos de comunicación e interfaces de E/S.
+
+Son ligeros, pequeños y con requerimientos de potencia relativamente bajos, son ideales para dispositivos electrónicos que funcionan con baterías. Esto los hace asequibles, pero también muy presentes en aplicaciones industriales, como la automatización, sistemas de seguridad y prototipado.
+
+Ejemplos muy buenos de MCUs: Arduino UNO, ESP8266 o ESP32 y la Raspberry Pico.
+
+Los lenguajes de programación típicamente usados son C++, MicroPython y Rust, además de algunos frameworks específicos, como el ESP-Idf para los chips ESP32.
+
+Las herramientas más usadas para el desarrollo son dependientes del lenguaje seleccionado, pero puede ser Arduino IDE para arduinos y ESPs, usando C++; Arduino Labs MicroPython para ESP32 o incluso la terminal para usar Rust.
+
+Si bien puede usarse VSCode para el desarrollo, no se sugiere debido a lo pesado que puede llegar a ser el código cuando se utilizan herramientas más "automatizadas", tales como PlatformIO.
+
+Existen varios tipos de MCUs, como los de 8, 16 y 32 bits, los RISC, ARM o los PICs.
+
+## MPUs
+
+Son el tipo predominante de procesador en una computadora, conteniendo una Unidad Lógica Aritmética (ALU), la Unidad de Control, los Registros, la memoria caché, los diferentes núcleos de procesamiento y los correspondientes módulos E/S. Necesitan memoria RAM y permanente provistas por componentes externos y los diferentes periféricos deben conectarse bajo demanda.
+
+Los diferentes tipos de MPUs que existen engloban los de uso general (para PC, por ejemplo), los procesadores de señales digitales o DSP, diseñados para fuertes cargas de cálculo numérico de alta velocidad como el procesamiento de video; existen también los ASIC, que son circuitos integrados específicos de la aplicación, que engloban las GPUs, por ejemplo. También entran aquí los que han sido diseñados para minería de criptomonedas, los procesadores de paquetes de red que se usan en comutadores de telecomunicaciones, enrutadores y dispositivos de seguridad de redes o los personalizados para consolas de videojuegos.
+
+Un MPU asequible es la Raspberry Pi y sus diferentes versiones y alternativas, ya que por su bajo precio y relativo bajo consumo le permite ser utilizada
+en aplicaciones que perfectamente ocupan los MCUs. Esta máquina puede ser auto-programada con Python (es decir, sus programas pueden escribirse con la misma máquina y hacerla ejecutarlos) utilizando los diferentes IDEs disponibles, aunque también puede trabajar con C++ o Rust.
+
+## Conclusión
+
+¿Cuándo elegir un MCU o un MPU? El primero es excelente procesando señales con bajos consumos. El segundo es mejor realizando cálculos complejos y diferentes actividades a la vez, pero con mayor consumo de energía y mayores costos de compra y mantenimiento.
