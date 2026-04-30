@@ -1,8 +1,10 @@
-# Introducción a los sistemas embebidos
+# Decisiones
 
 Antes de siquiera definir qué son los sistemas embebidos, necesitamos establecer las diferencias entre un microcontrolador (MCU) y un microprocesador (MPU).
 
-## MCUs
+## Microcontroladores o microprocesadores
+
+### MCUs
 
 Un MCU contiene todo lo necesario para funcionar en una sola pieza de hardware. Es decir, es una computadora en un solo chip (System on a Chip o SoC) que contiene una CPU, una memoria volátil operativa (RAM), otra de solo lectura, programable y borrable eléctricamente (Electrically Erase PROgrammable Memory o EEPROM) y periféricos como conversores, protocolos de comunicación e interfaces de E/S.
 
@@ -18,15 +20,40 @@ Si bien puede usarse VSCode para el desarrollo, no se sugiere debido a lo pesado
 
 Existen varios tipos de MCUs, como los de 8, 16 y 32 bits, los RISC, ARM o los PICs.
 
-## MPUs
+### MPUs
 
 Son el tipo predominante de procesador en una computadora, conteniendo una Unidad Lógica Aritmética (ALU), la Unidad de Control, los Registros, la memoria caché, los diferentes núcleos de procesamiento y los correspondientes módulos E/S. Necesitan memoria RAM y permanente provistas por componentes externos y los diferentes periféricos deben conectarse bajo demanda.
 
 Los diferentes tipos de MPUs que existen engloban los de uso general (para PC, por ejemplo), los procesadores de señales digitales o DSP, diseñados para fuertes cargas de cálculo numérico de alta velocidad como el procesamiento de video; existen también los ASIC, que son circuitos integrados específicos de la aplicación, que engloban las GPUs, por ejemplo. También entran aquí los que han sido diseñados para minería de criptomonedas, los procesadores de paquetes de red que se usan en comutadores de telecomunicaciones, enrutadores y dispositivos de seguridad de redes o los personalizados para consolas de videojuegos.
 
-Un MPU asequible es la Raspberry Pi y sus diferentes versiones y alternativas, ya que por su bajo precio y relativo bajo consumo le permite ser utilizada
-en aplicaciones que perfectamente ocupan los MCUs. Esta máquina puede ser auto-programada con Python (es decir, sus programas pueden escribirse con la misma máquina y hacerla ejecutarlos) utilizando los diferentes IDEs disponibles, aunque también puede trabajar con C++ o Rust.
+Un MPU asequible es la Raspberry Pi y sus diferentes versiones y alternativas (la Beagleboard y el Intel Galileo, por ejemplo), ya que por su bajo precio y relativo bajo consumo le permite ser utilizada en aplicaciones que perfectamente ocupan los MCUs. Esta máquina puede ser auto-programada con Python (es decir, sus programas pueden escribirse con la misma máquina y hacerla ejecutarlos) utilizando los diferentes IDEs disponibles, aunque también puede trabajar con C++ o Rust.
 
-## Conclusión
+### Conclusión
 
 ¿Cuándo elegir un MCU o un MPU? El primero es excelente procesando señales con bajos consumos. El segundo es mejor realizando cálculos complejos y diferentes actividades a la vez, pero con mayor consumo de energía y mayores costos de compra y mantenimiento.
+
+## Lenguajes de programación
+
+Una vez decidido el *hardware*, pasemos a elegir con qué lo vamos a programar. Si bien puede utilizarse una cantidad bastante considerable de lenguajes, el panorama se encuentra dominado por tres de ellos: C/C++, Java y Python.
+
+### C++
+
+En el caso del primero, su popularidad se debe a su capacidad de crear secuencias de comandos compacta y optimizada para ejecutarse en memoria RAM, además de ser compilado y ser compatible con todos los dispositivos mencionados anteriormente, en especial los arduinos y las ESP.
+
+### Python
+
+Para el caso de Python, su popularidad es enorme considerando su versatilidad y facilidad para aprenderlo. En el caso de sistemas embebidos no suele ser la primera opción si se habla de MCUs, ya que por su mismo tamaño y flexibilidad se le considera lento. Sin embargo, para estos existe MicroPython, que es una implementación que retira los componentes innecesarios para centrarse únicamente en lo que sirve para sistemas tan limitados. Python como tal, funciona muy bien en la Raspberry Pi; mientras que MicroPython va excelente en las ESP.
+
+### Otros
+
+Otros nombres que van tomando fuerza son Javascript (por medio de Node.js), el Go de Google e incluso el C de Mozilla: **Rust**, el cual es bastante prometedor por las carencias de C que resuelve y la seguridad intrínseca que posee. Sin embargo, su comunidad es aún relativamente pequeña.
+
+Por último, pero no por ello menos importante, tenemos el lenguaje ensamblador, al más bajo nivel (lo que se conoce como *bare metal*, casi el metal). Este permite programar al dispositivo exactamente como deseamos con el mejor rendimiento posible. Es decir, podremos exprimir al máximo el sistema. El costo, por otro lado, es probablemente perder la cabeza.
+
+### Conclusión
+
+Para el caso particular, nos restringimos a dos escenarios con sus respectivas ramificaciones.
+
+1. La Universidad cuenta con Raspberry Pi en sus versiones 2, 3 y unas cuantas 4. Estas se encuentran disponibles para su uso por el alumnado, por lo que no tendría que adquirise. Sin embargo, no cuentan con pantalla (obligando a conectarla a un monitor mediante cable HDMI) ni con su alimentador, el cual debe conseguirse por separado. Pero tranquilos, uno que funcione con teléfonos celulares cubre bien el punto. Se programan con Python, aunque nada impide usar otros lenguajes.
+2. Adquirir una ESP32, la cual es una tarjeta bastante económica (ronda los 120 pesos en tiendas nacionales), incluso puede adquirise en paquetes que traen la mayoría de los componentes electrónicos necesarios para el curso. El único punto negativo es que debe adquirirse un cable USB compatible que sea de datos, no de carga. Se enfatiza en este punto ya que muchas veces los propios paquetes con la tarjeta incluyen un cable que no cumple ese requisito. Las ESP pueden usarse con su propio lenguaje, con C++, con MicroPython o Rust.
+

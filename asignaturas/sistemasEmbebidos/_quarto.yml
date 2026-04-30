@@ -7,7 +7,11 @@ book:
   chapters:
     - index.qmd
     - intro.qmd
-    - introSist.qmd
+    - part: "Unidad I: Introducción a los Sistemas Embebidos."
+      chapters:
+        - introSist.qmd
+        - practica00.qmd
+        - practica01.qmd
     - references.qmd
 
 bibliography: references.bib
@@ -25,4 +29,5 @@ format:
     toc: true
     toc-title: Contenido
     html-math-method: mathml
+
 
