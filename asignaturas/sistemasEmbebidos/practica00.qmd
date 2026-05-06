@@ -1,0 +1,7 @@
+# Práctica 0. Preparar el entorno
+
+A continuación veremos las distintas prácticas que nos irán dando una introducción al trabajo real con sistemas embebidos. Se sugiere comenzar utilizando simuladores, tales como *TinkerCAD* para Arduino y *Wokwi* para la ESP32. Si se utiliza la Raspberry, lo ideal es trastear con ella desde el principio.
+
+La preparación de nuestro entorno de desarrollo es primordial y solo puede arrancar cuando ya decidimos cuál tecnología estaremos usando. Si será la Raspberry (o raspi, para abreviar), basta con instalarle el sistema operativo que deseemos, siempre y cuando sea un Linux (*Raspberry Pi OS* suena bien, pero bien puede usarse cualquier distribución). Pero en el caso de la ESP32, debemos decidir con qué lenguaje la vamos a programar. Lo ideal es hacerlo con C++, lo que implica instalar *Arduino IDE*, el controlador USB Serial UART y las extensiones necesarias. Si por otro lado se opta por usar MicroPython, debe instalarse *Arduino Labs for MicroPython* y su correspondiente controlador USB.
+
+## Elementos necesarios
